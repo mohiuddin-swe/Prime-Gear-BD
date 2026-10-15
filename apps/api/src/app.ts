@@ -1,11 +1,24 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
+import helmet from "helmet";
+import { env } from "./config/env";
+import { errorHandler, notFoundHandler } from "./middleware/error-handler";
+import { globalLimiter } from "./middleware/rate-limit";
+import { requestLogger } from "./middleware/request-logger";
 import { v1Router } from "./routes";
 
 export function createApp() {
   const app = express();
-  app.use(cors({ origin: process.env.WEB_ORIGIN ?? "http://localhost:3000", credentials: true }));
-  app.use(express.json());
+  app.set("trust proxy", 1); // behind Cloudflare / a reverse proxy: req.ip must be the client
+  app.use(requestLogger);
+  app.use(helmet());
+  app.use(cors({ origin: env.WEB_ORIGIN, credentials: true }));
+  app.use(globalLimiter());
+  app.use(express.json({ limit: "100kb" }));
+  app.use(cookieParser());
   app.use("/api/v1", v1Router);
+  app.use(notFoundHandler);
+  app.use(errorHandler);
   return app;
 }

@@ -1,4 +1,5 @@
-import { randomBytes, scryptSync } from "node:crypto";
+import { randomBytes } from "node:crypto";
+import bcrypt from "bcryptjs";
 import { createPrismaClient } from "../src";
 
 const prisma = createPrismaClient();
@@ -7,8 +8,7 @@ const img = (label: string) =>
   `https://placehold.co/800x800/f5f7fb/1a56db/png?text=${encodeURIComponent(label)}`;
 
 function hashPassword(password: string) {
-  const salt = randomBytes(16).toString("hex");
-  return `scrypt$${salt}$${scryptSync(password, salt, 64).toString("hex")}`;
+  return bcrypt.hashSync(password, 12);
 }
 
 type SeedVariant = {
