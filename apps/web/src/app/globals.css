@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+body {
+  background: var(--color-surface, #f5f7fb);
+}

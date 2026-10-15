@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: primegear
+      POSTGRES_PASSWORD: primegear
+      POSTGRES_DB: primegear
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    ports: ["6379:6379"]
+    volumes: [redisdata:/data]
+  meilisearch:
+    image: getmeili/meilisearch:v1.12
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: dev-master-key
+      MEILI_ENV: development
+    ports: ["7700:7700"]
+    volumes: [meilidata:/meili_data]
+volumes:
+  pgdata:
+  redisdata:
+  meilidata:
