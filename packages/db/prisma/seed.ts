@@ -1,4 +1,6 @@
+import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
+import { fileURLToPath } from "node:url";
 import bcrypt from "bcryptjs";
 import { createPrismaClient } from "../src";
 
@@ -356,6 +358,21 @@ async function main() {
   }
 
   console.log("Seed complete.");
+  reindexSearch();
+}
+
+/** Keeps Meilisearch in step with the seeded catalog. The DB is already seeded, so a failure only warns. */
+function reindexSearch() {
+  try {
+    execFileSync("pnpm", ["--filter", "@primegear/api", "search:reindex"], {
+      cwd: fileURLToPath(new URL("../../..", import.meta.url)),
+      stdio: "inherit",
+    });
+  } catch {
+    console.warn(
+      "Search reindex failed (is Meilisearch running?). Run `pnpm --filter @primegear/api search:reindex` once it is up.",
+    );
+  }
 }
 
 main()

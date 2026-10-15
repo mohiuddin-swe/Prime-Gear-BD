@@ -6,6 +6,9 @@ const envSchema = z.object({
   WEB_ORIGIN: z.string().default("http://localhost:3000"),
   DATABASE_URL: z.string().optional(),
   REDIS_URL: z.string().default("redis://localhost:6379"),
+  MEILI_URL: z.string().default("http://localhost:7700"),
+  MEILI_MASTER_KEY: z.string().optional(),
+  CATALOG_CACHE_TTL_SECONDS: z.coerce.number().int().default(300),
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
   JWT_EXPIRES_IN_SECONDS: z.coerce
     .number()

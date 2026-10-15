@@ -12,6 +12,7 @@
     "test": "vitest run",
     "worker": "tsx watch --env-file-if-exists=.env src/workers/index.ts",
     "worker:start": "tsx --env-file-if-exists=.env src/workers/index.ts",
+    "search:reindex": "tsx --env-file-if-exists=.env src/scripts/reindex-search.ts",
     "job:example": "tsx --env-file-if-exists=.env src/workers/enqueue-example.ts"
   },
   "devDependencies": {
