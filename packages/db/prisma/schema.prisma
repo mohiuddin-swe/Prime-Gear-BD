@@ -1,0 +1,729 @@
+// Prime Gear BD — Phase 1 schema.
+// Rules: money is Int BDT (whole taka); every business table carries storeId;
+// OrderItem snapshots name/SKU/price at purchase time.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ───────────── Enums ─────────────
+
+enum AdminRole {
+  OWNER
+  MANAGER
+  CALL_AGENT
+  PACKER
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum ImageKind {
+  STANDARD
+  DARK_ROOM // real light-output shot for lighting products
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PACKED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+  PARTIAL_DELIVERED
+}
+
+enum OrderSource {
+  WEBSITE
+  ADMIN
+  PHONE
+  FACEBOOK
+  WHATSAPP
+  OTHER
+}
+
+enum PaymentMethod {
+  COD
+  BKASH
+  NAGAD
+  SSLCOMMERZ
+}
+
+enum PaymentStatus {
+  UNPAID
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum CourierProviderType {
+  STEADFAST
+  CARRYBEE
+  PATHAO
+  REDX
+}
+
+enum ShipmentStatus {
+  PENDING
+  BOOKED
+  IN_TRANSIT
+  DELIVERED
+  PARTIAL_DELIVERED
+  RETURNED
+  CANCELLED
+  FAILED
+}
+
+enum CartStatus {
+  ACTIVE
+  CONVERTED
+  ABANDONED
+}
+
+enum IncompleteOrderStatus {
+  OPEN
+  CONTACTED
+  CONVERTED
+  DISCARDED
+}
+
+enum UpsellSource {
+  BULK_TIER
+  BUY_TOGETHER
+  CART_UPSELL
+  CHECKOUT_UPSELL
+  POST_ORDER
+}
+
+enum UpsellType {
+  BUY_TOGETHER
+  CART_UPSELL
+  CHECKOUT_UPSELL
+  POST_ORDER
+}
+
+enum DiscountType {
+  FIXED // whole taka off
+  PERCENT // 1-100
+}
+
+enum TrackingPlatform {
+  META
+  TIKTOK
+  GA4
+}
+
+enum TrackingEventStatus {
+  QUEUED
+  SENT
+  FAILED
+  SKIPPED
+}
+
+// ───────────── Tenant ─────────────
+
+model Store {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  domain    String?  @unique
+  currency  String   @default("BDT")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categories           Category[]
+  brands               Brand[]
+  products             Product[]
+  variants             ProductVariant[]
+  images               ProductImage[]
+  attributes           Attribute[]
+  attributeValues      AttributeValue[]
+  variantAttributes    VariantAttributeValue[]
+  customers            Customer[]
+  addresses            Address[]
+  carts                Cart[]
+  cartItems            CartItem[]
+  orders               Order[]
+  orderItems           OrderItem[]
+  orderStatusLogs      OrderStatusLog[]
+  payments             Payment[]
+  shipments            Shipment[]
+  courierAccounts      CourierAccount[]
+  incompleteOrders     IncompleteOrder[]
+  bulkTiers            BulkTier[]
+  upsellRules          UpsellRule[]
+  adminUsers           AdminUser[]
+  auditLogs            AuditLog[]
+  settings             Setting[]
+  redirects            Redirect[]
+  trackingEventLogs    TrackingEventLog[]
+}
+
+// ───────────── Catalog ─────────────
+
+model Category {
+  id          String   @id @default(cuid())
+  storeId     String
+  parentId    String?
+  name        String
+  slug        String
+  description String?
+  imageUrl    String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  seoTitle    String?
+  seoDescription String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  store    Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryTree")
+  products Product[]
+
+  @@unique([storeId, slug])
+  @@index([storeId, parentId])
+}
+
+model Brand {
+  id        String   @id @default(cuid())
+  storeId   String
+  name      String
+  slug      String
+  logoUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store    Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@unique([storeId, slug])
+}
+
+model Product {
+  id               String        @id @default(cuid())
+  storeId          String
+  categoryId       String?
+  brandId          String?
+  name             String
+  slug             String
+  shortDescription String?
+  description      String?
+  status           ProductStatus @default(DRAFT)
+  isFeatured       Boolean       @default(false)
+  tags             String[]
+  seoTitle         String?
+  seoDescription   String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  store     Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  category  Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  brand     Brand?           @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  variants  ProductVariant[]
+  images    ProductImage[]
+  bulkTiers BulkTier[]
+  cartItems CartItem[]
+  orderItems OrderItem[]
+  upsellTriggers UpsellRule[] @relation("UpsellTriggerProduct")
+  upsellOffers   UpsellRule[] @relation("UpsellOfferProduct")
+
+  @@unique([storeId, slug])
+  @@index([storeId, status, createdAt])
+  @@index([storeId, categoryId])
+  @@index([storeId, brandId])
+}
+
+// Every product has at least one variant (simple products get a single default one).
+model ProductVariant {
+  id           String   @id @default(cuid())
+  storeId      String
+  productId    String
+  name         String // e.g. "Warm White / 5m"
+  sku          String
+  price        Int // BDT
+  comparePrice Int? // BDT, original price for % off
+  stock        Int      @default(0)
+  isDefault    Boolean  @default(false)
+  isActive     Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  store      Store                   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product    Product                 @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attributes VariantAttributeValue[]
+  images     ProductImage[]
+  bulkTiers  BulkTier[]
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@unique([storeId, sku])
+  @@index([storeId, productId])
+}
+
+model ProductImage {
+  id        String    @id @default(cuid())
+  storeId   String
+  productId String
+  variantId String?
+  url       String
+  alt       String?
+  kind      ImageKind @default(STANDARD)
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  store   Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, productId, sortOrder])
+}
+
+model Attribute {
+  id        String   @id @default(cuid())
+  storeId   String
+  name      String // e.g. "Color"
+  slug      String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  store  Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  values AttributeValue[]
+
+  @@unique([storeId, slug])
+}
+
+model AttributeValue {
+  id          String   @id @default(cuid())
+  storeId     String
+  attributeId String
+  value       String // e.g. "Warm White"
+  swatch      String? // optional color token/image for swatches
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  store     Store                   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  attribute Attribute               @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  variants  VariantAttributeValue[]
+
+  @@unique([attributeId, value])
+  @@index([storeId, attributeId])
+}
+
+model VariantAttributeValue {
+  id               String @id @default(cuid())
+  storeId          String
+  variantId        String
+  attributeValueId String
+
+  store          Store          @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  variant        ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  attributeValue AttributeValue @relation(fields: [attributeValueId], references: [id], onDelete: Cascade)
+
+  @@unique([variantId, attributeValueId])
+  @@index([storeId, attributeValueId])
+}
+
+// Quantity-based price: buy `minQty` or more → `unitPrice` each. variantId null = whole product.
+model BulkTier {
+  id        String   @id @default(cuid())
+  storeId   String
+  productId String
+  variantId String?
+  minQty    Int
+  unitPrice Int // BDT per unit at this tier
+  label     String? // e.g. "Buy 3, save more"
+  createdAt DateTime @default(now())
+
+  store   Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, variantId, minQty])
+  @@index([storeId, productId])
+}
+
+model UpsellRule {
+  id                String       @id @default(cuid())
+  storeId           String
+  type              UpsellType
+  name              String
+  triggerProductId  String?
+  offerProductId    String
+  discountType      DiscountType @default(FIXED)
+  discountValue     Int          @default(0) // taka for FIXED, 1-100 for PERCENT
+  priority          Int          @default(0)
+  isActive          Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  store          Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  triggerProduct Product? @relation("UpsellTriggerProduct", fields: [triggerProductId], references: [id], onDelete: Cascade)
+  offerProduct   Product  @relation("UpsellOfferProduct", fields: [offerProductId], references: [id], onDelete: Cascade)
+
+  @@index([storeId, type, isActive])
+  @@index([storeId, triggerProductId])
+}
+
+// ───────────── Customers & carts ─────────────
+
+// Phone is the primary identity, stored normalized as 01XXXXXXXXX.
+model Customer {
+  id        String   @id @default(cuid())
+  storeId   String
+  phone     String
+  name      String
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store     Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  addresses Address[]
+  carts     Cart[]
+  orders    Order[]
+
+  @@unique([storeId, phone])
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  storeId    String
+  customerId String
+  name       String
+  phone      String
+  address    String
+  district   String
+  thana      String?
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  store    Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([storeId, customerId])
+}
+
+model Cart {
+  id         String     @id @default(cuid())
+  storeId    String
+  customerId String?
+  sessionId  String // anonymous cart cookie
+  status     CartStatus @default(ACTIVE)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  store    Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  customer Customer?  @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  items    CartItem[]
+
+  @@index([storeId, sessionId])
+  @@index([storeId, status, updatedAt])
+}
+
+model CartItem {
+  id           String        @id @default(cuid())
+  storeId      String
+  cartId       String
+  productId    String
+  variantId    String
+  quantity     Int
+  upsellSource UpsellSource?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  store   Store          @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  cart    Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, variantId])
+}
+
+// Captured at checkout before the order is submitted (abandoned-checkout recovery by phone).
+model IncompleteOrder {
+  id               String                @id @default(cuid())
+  storeId          String
+  sessionId        String?
+  phone            String?
+  name             String?
+  address          String?
+  district         String?
+  thana            String?
+  cartSnapshot     Json
+  subtotal         Int                   @default(0)
+  status           IncompleteOrderStatus @default(OPEN)
+  convertedOrderId String?
+  fbclid           String?
+  fbp              String?
+  fbc              String?
+  ttclid           String?
+  ttp              String?
+  gaClientId       String?
+  clientIp         String?
+  userAgent        String?
+  lastActivityAt   DateTime              @default(now())
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId, phone])
+  @@index([storeId, status, createdAt])
+}
+
+// ───────────── Orders ─────────────
+
+model Order {
+  id            String        @id @default(cuid())
+  storeId       String
+  orderNumber   String // human-facing, unique per store; drives purchase_<orderNumber> event id
+  customerId    String?
+  phone         String // normalized 01XXXXXXXXX
+  name          String
+  address       String
+  district      String
+  thana         String?
+  note          String?
+  subtotal      Int
+  discount      Int           @default(0)
+  shippingFee   Int           @default(0)
+  total         Int
+  paymentMethod PaymentMethod @default(COD)
+  paymentStatus PaymentStatus @default(UNPAID)
+  status        OrderStatus   @default(PENDING)
+  source        OrderSource   @default(WEBSITE)
+
+  // Tracking, captured at landing/checkout
+  fbclid         String?
+  fbp            String?
+  fbc            String?
+  ttclid         String?
+  ttp            String?
+  gaClientId     String?
+  clientIp       String?
+  userAgent      String?
+  leadEventId    String? // shared by browser + server Lead for dedup
+  purchaseSentAt DateTime? // idempotency guard for the server-side Purchase
+
+  confirmedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  store      Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  customer   Customer?        @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  items      OrderItem[]
+  statusLogs OrderStatusLog[]
+  payments   Payment[]
+  shipments  Shipment[]
+  trackingEventLogs TrackingEventLog[]
+
+  @@unique([storeId, orderNumber])
+  @@index([storeId, status, createdAt])
+  @@index([storeId, phone])
+  @@index([storeId, customerId])
+  @@index([storeId, createdAt])
+}
+
+model OrderItem {
+  id           String        @id @default(cuid())
+  storeId      String
+  orderId      String
+  productId    String? // kept for reporting; nullable so catalog deletes never break history
+  variantId    String?
+  productName  String // snapshot
+  variantName  String? // snapshot
+  sku          String // snapshot
+  unitPrice    Int // snapshot, BDT
+  quantity     Int
+  lineTotal    Int
+  upsellSource UpsellSource?
+  createdAt    DateTime      @default(now())
+
+  store   Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, orderId])
+  @@index([storeId, productId])
+}
+
+model OrderStatusLog {
+  id          String       @id @default(cuid())
+  storeId     String
+  orderId     String
+  fromStatus  OrderStatus?
+  toStatus    OrderStatus
+  note        String?
+  adminUserId String?
+  createdAt   DateTime     @default(now())
+
+  store     Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  order     Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  adminUser AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, orderId, createdAt])
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  storeId       String
+  orderId       String
+  method        PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  amount        Int // BDT
+  transactionId String?
+  gatewayData   Json?
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([storeId, orderId])
+  @@index([storeId, transactionId])
+}
+
+model CourierAccount {
+  id          String              @id @default(cuid())
+  storeId     String
+  provider    CourierProviderType
+  name        String
+  credentials Json // encrypted by the app before write
+  isActive    Boolean             @default(true)
+  isDefault   Boolean             @default(false)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  store     Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  shipments Shipment[]
+
+  @@index([storeId, provider])
+}
+
+model Shipment {
+  id               String              @id @default(cuid())
+  storeId          String
+  orderId          String
+  courierAccountId String?
+  provider         CourierProviderType
+  consignmentId    String?
+  trackingCode     String?
+  status           ShipmentStatus      @default(PENDING)
+  codAmount        Int                 @default(0) // BDT to collect
+  rawResponse      Json?
+  bookedAt         DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  store          Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  courierAccount CourierAccount? @relation(fields: [courierAccountId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, orderId])
+  @@index([storeId, consignmentId])
+  @@index([storeId, status])
+}
+
+// ───────────── Admin, audit, config ─────────────
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  storeId      String
+  email        String
+  passwordHash String
+  name         String
+  role         AdminRole @default(CALL_AGENT)
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  store      Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  auditLogs  AuditLog[]
+  statusLogs OrderStatusLog[]
+
+  @@unique([storeId, email])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  storeId     String
+  adminUserId String?
+  action      String // e.g. "product.update"
+  entity      String // e.g. "Product"
+  entityId    String?
+  before      Json?
+  after       Json?
+  ip          String?
+  createdAt   DateTime @default(now())
+
+  store     Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  adminUser AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, entity, entityId])
+  @@index([storeId, createdAt])
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  storeId   String
+  key       String
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([storeId, key])
+}
+
+// Keeps WooCommerce URLs alive after migration.
+model Redirect {
+  id         String   @id @default(cuid())
+  storeId    String
+  fromPath   String
+  toPath     String
+  statusCode Int      @default(301)
+  createdAt  DateTime @default(now())
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([storeId, fromPath])
+}
+
+// Server-side events sent to the Cloudflare tracking endpoint (Lead, Purchase).
+model TrackingEventLog {
+  id         String              @id @default(cuid())
+  storeId    String
+  orderId    String?
+  eventName  String // e.g. "Lead", "Purchase"
+  eventId    String // shared with the browser event for dedup
+  platform   TrackingPlatform?
+  status     TrackingEventStatus @default(QUEUED)
+  attempts   Int                 @default(0)
+  payload    Json?
+  response   Json?
+  error      String?
+  sentAt     DateTime?
+  createdAt  DateTime            @default(now())
+
+  store Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, eventId])
+  @@index([storeId, orderId])
+  @@index([storeId, status, createdAt])
+}

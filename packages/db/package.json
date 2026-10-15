@@ -1,0 +1,26 @@
+{
+  "name": "@primegear/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "migrate": "prisma migrate dev",
+    "generate": "prisma generate",
+    "seed": "tsx --env-file-if-exists=.env prisma/seed.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "dotenv": "^18.0.8"
+  },
+  "devDependencies": {
+    "prisma": "7.10.1",
+    "tsx": "^4.23.15"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}
