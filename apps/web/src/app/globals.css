@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
 
+/* Fixed sticky-header height so sticky bars below it can offset exactly (mobile 2 rows, md 1 row) */
+:root {
+  --header-h: 117px;
+}
+@media (min-width: 768px) {
+  :root {
+    --header-h: 69px;
+  }
+}
+
 @layer base {
   html {
     -webkit-tap-highlight-color: transparent;

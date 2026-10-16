@@ -5,7 +5,15 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./tailwind-preset": "./tailwind-preset.ts"
+    "./tailwind-preset": "./tailwind-preset.ts",
+    "./cn": "./src/cn.ts",
+    "./icon": "./src/icon.ts",
+    "./button": "./src/button.tsx",
+    "./price": "./src/price.tsx",
+    "./discount-badge": "./src/discount-badge.tsx",
+    "./overlay": "./src/overlay.tsx",
+    "./skeleton": "./src/skeleton.tsx",
+    "./product-card": "./src/product-card.tsx"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -27,5 +35,6 @@
   "peerDependencies": {
     "react": "^19",
     "react-dom": "^19"
-  }
+  },
+  "sideEffects": false
 }

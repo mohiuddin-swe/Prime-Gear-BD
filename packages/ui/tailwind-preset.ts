@@ -24,6 +24,8 @@ const preset: Partial<Config> = {
       boxShadow: {
         card: "0 4px 20px rgb(13 59 143 / 0.08)",
         "card-lift": "0 8px 28px rgb(13 59 143 / 0.14)",
+        // Cyan halo for hero product shots on dark sections
+        glow: "0 0 80px rgb(34 211 238 / 0.28)",
       },
       backgroundImage: {
         "brand-gradient": `linear-gradient(135deg, ${colors.brand[600]}, ${colors.brand[800]})`,

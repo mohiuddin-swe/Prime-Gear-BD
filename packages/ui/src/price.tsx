@@ -1,4 +1,4 @@
-import { formatTaka } from "@primegear/shared";
+import { formatTaka } from "@primegear/shared/format";
 import { cn } from "./cn";
 
 export type PriceProps = {

@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Grid2x2, Home, Search, ShoppingCart, User } from "lucide-react";
-import { cn, ICON_STROKE } from "@primegear/ui";
+import { cn } from "@primegear/ui/cn";
+import { ICON_STROKE } from "@primegear/ui/icon";
 
 const items = [
   { href: "/", label: "Home", Icon: Home },

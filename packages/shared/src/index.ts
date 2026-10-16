@@ -3,3 +3,4 @@ export * from "./auth";
 export * from "./health";
 export * from "./catalog";
 export * from "./format";
+export * from "./pricing";

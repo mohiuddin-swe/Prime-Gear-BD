@@ -1,4 +1,4 @@
-import { discountPercent } from "@primegear/shared";
+import { discountPercent } from "@primegear/shared/format";
 import { cn } from "./cn";
 
 export type DiscountBadgeProps = {

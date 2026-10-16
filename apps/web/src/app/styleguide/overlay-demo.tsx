@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { BottomSheet, Button, Drawer, QuickAddButton } from "@primegear/ui";
+import { Button } from "@primegear/ui/button";
+import { BottomSheet, Drawer } from "@primegear/ui/overlay";
+import { QuickAddButton } from "@primegear/ui/product-card";
 
 export function OverlayDemo() {
   const [sheet, setSheet] = useState(false);
