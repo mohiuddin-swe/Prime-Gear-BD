@@ -1,4 +1,5 @@
 import type { TrackingIds } from "@primegear/shared";
+import { uuid } from "./utils";
 
 // ───────────── Attribution capture ─────────────
 // fbclid / ttclid arrive on the landing URL; the pixels set _fbp / _fbc / _ttp / _ga cookies.
@@ -81,7 +82,7 @@ function clean<T>(value: T): T {
   return value;
 }
 
-export const newEventId = (prefix: string) => `${prefix}_${crypto.randomUUID()}`;
+export const newEventId = (prefix: string) => `${prefix}_${uuid()}`;
 
 /**
  * The one tracking helper: pushes a GA4-style event to window.dataLayer (GTM -> Cloudflare server-side

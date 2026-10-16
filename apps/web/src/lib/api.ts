@@ -8,7 +8,8 @@ import type {
   ProductListQuery,
 } from "@primegear/shared";
 
-const API_URL = process.env.API_URL ?? "http://localhost:4000";
+/** Server-side only (server components, actions): straight to the API, not through the /api/v1 proxy. */
+const API_URL = process.env.API_INTERNAL_URL ?? "http://localhost:4000";
 /** ISR window for every catalog fetch, matching each page's `revalidate`. */
 export const REVALIDATE = 300;
 

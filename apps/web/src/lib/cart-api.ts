@@ -1,6 +1,16 @@
 import type { AddToCartInput, CartView, UpsellOffer } from "@primegear/shared";
 
-const BASE = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}/api/v1`;
+// Same-origin: next.config rewrites /api/v1/* to the API, so the cart cookie is first-party
+const BASE = "/api/v1";
+
+/**
+ * "/cart/items/x?zone=y" -> "/api/v1/cart/items/x/?zone=y". The site uses trailingSlash, so Next
+ * would 308-redirect a slashless path before the proxy; Express routes both forms the same.
+ */
+const apiUrl = (path: string) => {
+  const [pathname, query] = path.split("?", 2);
+  return `${BASE}${pathname!.replace(/\/?$/, "/")}${query === undefined ? "" : `?${query}`}`;
+};
 
 export class CartApiError extends Error {
   constructor(
@@ -19,9 +29,9 @@ export async function call<T>(
 ): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(`${BASE}${path}`, {
+    res = await fetch(apiUrl(path), {
       method: init.method ?? "GET",
-      credentials: "include",
+      credentials: "same-origin",
       headers: init.body === undefined ? undefined : { "content-type": "application/json" },
       body: init.body === undefined ? undefined : JSON.stringify(init.body),
     });

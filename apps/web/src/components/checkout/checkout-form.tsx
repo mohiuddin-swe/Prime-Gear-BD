@@ -28,6 +28,7 @@ import { CartApiError } from "@/lib/cart-api";
 import { checkoutApi, type Quote } from "@/lib/checkout-api";
 import { supportPhoneDisplay, SUPPORT_PHONE, supportWhatsappHref } from "@/lib/site";
 import { getTrackingIds, track } from "@/lib/tracking";
+import { uuid } from "@/lib/utils";
 import { DistrictSheet } from "./district-sheet";
 import { OrderBump } from "./order-bump";
 import { OrderSummary } from "./order-summary";
@@ -140,7 +141,7 @@ export function CheckoutForm() {
   const [serverError, setServerError] = useState<string | null>(null);
 
   // One key per checkout attempt: a retried submit returns the same order instead of a second one
-  const idempotencyKey = useRef(crypto.randomUUID());
+  const idempotencyKey = useRef(uuid());
   const submitLock = useRef(false);
   const placed = useRef(false);
   const startedTracking = useRef(false);

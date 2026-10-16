@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const WEB = process.env.E2E_BASE_URL ?? "http://localhost:3000";
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+const API = process.env.API_INTERNAL_URL ?? "http://localhost:4000";
 
 /**
  * Browser tests against the running storefront + API (seeded catalog, docker compose services up).

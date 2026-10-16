@@ -13,6 +13,8 @@ export function createApp() {
   app.set("trust proxy", 1); // behind Cloudflare / a reverse proxy: req.ip must be the client
   app.use(requestLogger);
   app.use(helmet());
+  // The storefront calls the API same-origin through the Next.js /api/v1 proxy, so it needs no
+  // CORS; this is for callers on another origin (e.g. a separate admin or tools domain)
   app.use(cors({ origin: env.WEB_ORIGIN, credentials: true }));
   app.use(globalLimiter());
   app.use(express.json({ limit: "100kb" }));
