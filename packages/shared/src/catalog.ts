@@ -120,6 +120,11 @@ export type ProductCard = {
   /** Original price of the cheapest variant, only when higher than price. */
   comparePrice: number | null;
   inStock: boolean;
+  /**
+   * The variant a card's quick add puts in the cart: set only when the product has exactly one
+   * active variant and it is in stock. Otherwise the card opens the product page to choose.
+   */
+  quickAddVariantId: string | null;
   imageUrl: string | null;
   category: { name: string; slug: string } | null;
   brand: { name: string; slug: string } | null;

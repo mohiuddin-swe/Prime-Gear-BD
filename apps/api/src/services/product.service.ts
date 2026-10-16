@@ -88,7 +88,8 @@ async function rankIds(
 }
 
 export async function listProducts(storeId: string, q: ProductListQuery) {
-  const key = `products:${JSON.stringify([q.category, q.brand, q.minPrice, q.maxPrice, q.inStock, q.sort, q.page, q.limit])}`;
+  // Versioned like the product key below: bump when ProductCard changes shape
+  const key = `products:v2:${JSON.stringify([q.category, q.brand, q.minPrice, q.maxPrice, q.inStock, q.sort, q.page, q.limit])}`;
   return cached(storeId, key, async () => {
     const prisma = getPrisma();
     const where = await buildProductWhere(storeId, q);
@@ -154,7 +155,7 @@ async function reviewSummary(storeId: string, productId: string): Promise<Produc
 export function getProductBySlug(storeId: string, slug: string) {
   // Bump the key's version whenever ProductDetail changes shape, so entries cached by the
   // previous release (missing new fields) are never served to the new storefront
-  return cached<ProductDetail>(storeId, `product:v2:${slug}`, async () => {
+  return cached<ProductDetail>(storeId, `product:v3:${slug}`, async () => {
     const prisma = getPrisma();
     const product = await prisma.product.findFirst({
       where: { storeId, slug, status: "ACTIVE" },

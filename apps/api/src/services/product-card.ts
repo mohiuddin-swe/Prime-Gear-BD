@@ -7,7 +7,7 @@ export const cardInclude = {
   brand: { select: { name: true, slug: true } },
   variants: {
     where: { isActive: true },
-    select: { sku: true, price: true, comparePrice: true, stock: true },
+    select: { id: true, sku: true, price: true, comparePrice: true, stock: true },
     orderBy: { price: "asc" },
   },
   images: {
@@ -34,6 +34,8 @@ export function toProductCard(p: CardProduct): ProductCard {
         ? cheapest.comparePrice
         : null,
     inStock: p.variants.some((v) => v.stock > 0),
+    quickAddVariantId:
+      p.variants.length === 1 && cheapest && cheapest.stock > 0 ? cheapest.id : null,
     imageUrl: p.images[0]?.url ?? null,
     category: p.category,
     brand: p.brand,

@@ -71,6 +71,28 @@ describe("GET /api/v1/products", () => {
     );
   });
 
+  it("sets quickAddVariantId only for a single in-stock variant", async () => {
+    const variant = (id: string, stock: number) => ({
+      id,
+      sku: id,
+      price: 500,
+      comparePrice: null,
+      stock,
+    });
+    prisma.product.count.mockResolvedValue(3);
+    prisma.product.findMany.mockResolvedValue([
+      row("single", 500, 3, { variants: [variant("v_single", 4)] }),
+      row("multi", 500, 2, { variants: [variant("v_white", 4), variant("v_black", 4)] }),
+      row("soldout", 500, 1, { variants: [variant("v_out", 0)] }),
+    ]);
+
+    const res = await request(app).get("/api/v1/products");
+
+    expect(
+      res.body.data.map((p: { quickAddVariantId: string | null }) => p.quickAddVariantId),
+    ).toEqual(["v_single", null, null]);
+  });
+
   it("defaults to page 1, limit 20", async () => {
     prisma.product.count.mockResolvedValue(0);
     prisma.product.findMany.mockResolvedValue([]);
@@ -389,7 +411,8 @@ describe("GET /api/v1/search", () => {
     expect(res.status).toBe(200);
     expect(res.body.meta).toEqual({ page: 2, limit: 5, total: 7 });
     expect(res.body.data).toEqual([
-      { id: "a", name: "Smart Plug", slug: "smart-plug", price: 800 },
+      // A document indexed before quickAddVariantId existed gets null (card links to the product)
+      { id: "a", name: "Smart Plug", slug: "smart-plug", price: 800, quickAddVariantId: null },
     ]);
     const [url, init] = fetchMock.mock.calls[0]!;
     expect(String(url)).toContain("/indexes/products/search");

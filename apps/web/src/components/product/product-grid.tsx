@@ -5,11 +5,11 @@ import type { ProductCard as ProductCardData } from "@primegear/shared";
 import { cn } from "@primegear/ui/cn";
 import { ProductCard, type ProductCardProps } from "@primegear/ui/product-card";
 import { productPath } from "@/lib/site";
+import { QuickAdd } from "./quick-add";
 
 /**
- * The "+" on grid cards. Cards carry no variant id, so it opens the product page to pick one.
- * Hidden from assistive tech and the tab order: the image and name already link there.
- * TODO: add to cart directly once the product list API returns the default variant id.
+ * The "+" on cards whose product needs a choice (several variants) or is out of stock: it opens
+ * the product page. Hidden from assistive tech and the tab order: the image and name already link there.
  */
 function QuickAddLink({ href }: { href: string }) {
   return (
@@ -49,7 +49,17 @@ export function ProductCardItem({
       price={product.price}
       compareAt={product.comparePrice}
       outOfStock={!product.inStock}
-      quickAdd={quickAdd ? <QuickAddLink href={href} /> : undefined}
+      quickAdd={
+        !quickAdd ? undefined : product.quickAddVariantId ? (
+          <QuickAdd
+            productId={product.id}
+            variantId={product.quickAddVariantId}
+            name={product.name}
+          />
+        ) : (
+          <QuickAddLink href={href} />
+        )
+      }
       image={
         product.imageUrl ? (
           <Image src={product.imageUrl} alt="" fill sizes={sizes} className="object-contain" />

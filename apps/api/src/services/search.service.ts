@@ -131,6 +131,8 @@ async function searchMeili(storeId: string, q: SearchQuery) {
     price: h.price,
     comparePrice: h.comparePrice,
     inStock: h.inStock,
+    // Documents indexed before the field existed lack it until the next reindex
+    quickAddVariantId: h.quickAddVariantId ?? null,
     imageUrl: h.imageUrl,
     category: h.category,
     brand: h.brand,

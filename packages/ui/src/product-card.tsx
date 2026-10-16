@@ -28,7 +28,12 @@ export type ProductCardProps = {
   className?: string;
 };
 
-const imageFill = "block h-full w-full [&>img]:h-full [&>img]:w-full [&>img]:object-contain";
+const imageFill =
+  "relative block h-full w-full [&>img]:h-full [&>img]:w-full [&>img]:object-contain";
+
+// Every variant's <article> is `relative`: cards sit inside overflow-x-auto rails, and without a
+// positioned ancestor the price's absolutely positioned sr-only text escapes the rail's clip, widens
+// the page and makes mobile browsers zoom out (which pushes the fixed order bar off-screen).
 
 /** White card on the surface background; image 1:1 on the sunken backdrop, price + add button below. */
 export function ProductCard({
@@ -68,7 +73,7 @@ export function ProductCard({
 
   if (variant === "rail") {
     return (
-      <article className={cn("flex flex-col gap-2", className)}>
+      <article className={cn("relative flex flex-col gap-2", className)}>
         <div className="relative aspect-square overflow-hidden rounded-tile bg-surface-sunken">
           {media}
         </div>
@@ -83,7 +88,10 @@ export function ProductCard({
   if (variant === "mini") {
     return (
       <article
-        className={cn("flex flex-col gap-1.5 rounded-card bg-white p-2.5 shadow-card", className)}
+        className={cn(
+          "relative flex flex-col gap-1.5 rounded-card bg-white p-2.5 shadow-card",
+          className,
+        )}
       >
         <div className="relative aspect-square overflow-hidden rounded-btn bg-surface-sunken">
           {media}
