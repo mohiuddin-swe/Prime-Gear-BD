@@ -6,7 +6,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./format": "./src/format.ts",
-    "./pricing": "./src/pricing.ts"
+    "./pricing": "./src/pricing.ts",
+    "./phone": "./src/phone.ts",
+    "./districts": "./src/districts.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -10,10 +10,12 @@ type Options = {
   limit: number;
   /** Extra key part, e.g. the phone or email from the body, to limit per identity as well as per IP */
   identity?: (req: Request) => string | undefined;
+  /** Count per identity alone (e.g. per phone) instead of per IP + identity. Falls back to the IP when there is none. */
+  identityOnly?: boolean;
 };
 
 /** Redis-backed limiter (shared across API instances). In tests it falls back to the in-memory store. */
-export function createRateLimiter({ name, windowMs, limit, identity }: Options) {
+export function createRateLimiter({ name, windowMs, limit, identity, identityOnly }: Options) {
   return rateLimit({
     windowMs,
     limit,
@@ -22,6 +24,7 @@ export function createRateLimiter({ name, windowMs, limit, identity }: Options) 
     keyGenerator: (req) => {
       const ip = ipKeyGenerator(req.ip ?? "unknown");
       const id = identity?.(req);
+      if (id && identityOnly) return `id:${id}`;
       return id ? `${ip}:${id}` : ip;
     },
     handler: (_req, res) => {

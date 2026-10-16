@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Eyebrow, SectionDark } from "@primegear/ui/section-dark";
 import { notFound } from "next/navigation";
 import { Breadcrumbs, type Crumb } from "@/components/layout/breadcrumbs";
+import { MobilePageHeader } from "@/components/layout/mobile-page-header";
 import { CategoryBrowser } from "@/components/category/category-browser";
 import { getCategory, getProducts, isNotFound } from "@/lib/api";
 import { SITE_NAME, abs, categoryPath } from "@/lib/site";
@@ -54,14 +56,36 @@ export default async function CategoryPage({ params }: Props) {
     { name: category.name, path: categoryPath(category.slug) },
   ];
 
+  const parent = category.ancestors.at(-1);
+
   return (
-    <div className="mx-auto max-w-7xl space-y-4 px-4 pb-8 pt-2 md:px-6 md:pb-12">
-      <Breadcrumbs crumbs={crumbs} />
-      <header className="space-y-2">
-        <h1 className="font-heading text-3xl font-extrabold">{category.name}</h1>
-        {category.description && <p className="max-w-2xl text-base">{category.description}</p>}
+    <>
+      <MobilePageHeader
+        backHref={parent ? categoryPath(parent.slug) : "/categories/"}
+        backLabel={parent ? `Back to ${parent.name}` : "Back to categories"}
+        title={category.name}
+      />
+      <div className="mx-auto max-w-7xl px-4 pb-8 pt-2 md:space-y-4 md:px-6 md:pb-12">
+        <div className="hidden md:block">
+          <Breadcrumbs crumbs={crumbs} />
+        </div>
+        <h1 className="hidden font-heading text-3xl font-extrabold md:block">{category.name}</h1>
+
+        <SectionDark
+          card
+          glow="banner"
+          contentClassName="relative flex min-h-33 flex-col justify-center gap-1.5"
+        >
+          <Eyebrow>
+            {first.total} {first.total === 1 ? "PRODUCT" : "PRODUCTS"}
+          </Eyebrow>
+          <p className="max-w-52.5 font-heading text-title font-extrabold leading-display tracking-display line-clamp-3 md:max-w-xl md:text-3xl">
+            {category.description ?? category.name}
+          </p>
+        </SectionDark>
+
         {category.children.length > 0 && (
-          <ul className="flex flex-wrap gap-2 pt-1">
+          <ul className="flex flex-wrap gap-2 pt-3 md:pt-0">
             {category.children.map((c) => (
               <li key={c.id}>
                 <Link
@@ -74,8 +98,9 @@ export default async function CategoryPage({ params }: Props) {
             ))}
           </ul>
         )}
-      </header>
-      <CategoryBrowser slug={slug} initialItems={first.items} initialTotal={first.total} />
-    </div>
+
+        <CategoryBrowser slug={slug} initialItems={first.items} initialTotal={first.total} />
+      </div>
+    </>
   );
 }

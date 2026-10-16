@@ -1,5 +1,6 @@
 import type {
   ApiMeta,
+  OrderSummary,
   CategoryDetail,
   CategoryNode,
   ProductCard,
@@ -31,8 +32,12 @@ const qs = (params: Record<string, string | number | boolean | undefined>) => {
   return s ? `?${s}` : "";
 };
 
-async function apiGet<T>(path: string, revalidate = REVALIDATE) {
-  const res = await fetch(`${API_URL}/api/v1${path}`, { next: { revalidate } });
+/** `revalidate: false` = never cache (order pages hold personal data). */
+async function apiGet<T>(path: string, revalidate: number | false = REVALIDATE) {
+  const res = await fetch(
+    `${API_URL}/api/v1${path}`,
+    revalidate === false ? { cache: "no-store" } : { next: { revalidate } },
+  );
   const body = (await res.json().catch(() => null)) as {
     success?: boolean;
     data?: T;
@@ -62,8 +67,21 @@ export async function getProducts(query: ProductListInput = {}) {
   return { items: data, total: meta?.total ?? data.length };
 }
 
-export const getProduct = async (slug: string) =>
-  (await apiGet<ProductDetail>(`/products/${encodeURIComponent(slug)}`)).data;
+export async function getProduct(slug: string): Promise<ProductDetail> {
+  const { data } = await apiGet<Partial<ProductDetail>>(`/products/${encodeURIComponent(slug)}`);
+  // A response cached (ISR) before the product page content fields existed lacks them:
+  // render those sections as empty rather than failing the page
+  return {
+    subtitle: null,
+    features: [],
+    boxContents: [],
+    lightModes: [],
+    specs: [],
+    darkImage: null,
+    reviews: { average: 0, count: 0, allVerified: false, latest: [] },
+    ...data,
+  } as ProductDetail;
+}
 
 export const getCategories = async () => (await apiGet<CategoryNode[]>("/categories")).data;
 
@@ -74,3 +92,6 @@ export async function searchProducts(q: string, page = 1, limit = 20) {
   const { data, meta } = await apiGet<ProductCard[]>(`/search${qs({ q, page, limit })}`);
   return { items: data, total: meta?.total ?? data.length };
 }
+
+export const getOrder = async (orderNumber: string) =>
+  (await apiGet<OrderSummary>(`/orders/${encodeURIComponent(orderNumber)}`, false)).data;

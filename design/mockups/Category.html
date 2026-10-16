@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>LED Lighting — Prime Gear BD</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1a56db}a:hover{color:#0d3b8f}
+.noscroll{scrollbar-width:none}.noscroll::-webkit-scrollbar{display:none}
+</style>
+</helmet>
+<div style="width: 390px; height: 1520px; box-sizing: border-box; background: #f5f7fb; font-family: Inter, system-ui, sans-serif; color: #111827; display: flex; flex-direction: column; position: relative; overflow: hidden">
+
+<header style="background: #ffffff; padding: 8px 8px 8px 4px; display: flex; align-items: center; gap: 2px">
+  <a href="Main.dc.html" aria-label="Back to home" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #111827"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></a>
+  <h1 style="margin: 0; flex: 1; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.01em">LED Lighting</h1>
+  <a href="#" aria-label="Search" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #111827"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></a>
+  <a href="Cart.dc.html" aria-label="Cart, 2 items" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #111827; position: relative"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span style="position: absolute; top: 5px; right: 3px; min-width: 18px; height: 18px; border-radius: 9px; background: #1a56db; color: #ffffff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; padding: 0 4px; box-sizing: border-box">2</span></a>
+</header>
+
+<section style="margin: 8px 16px 0; height: 132px; box-sizing: border-box; border-radius: 20px; background-color: #0b1220; background-image: radial-gradient(circle at 85% 60%, rgba(255,210,122,0.4), rgba(255,210,122,0) 38%), radial-gradient(circle at 0% 0%, rgba(26,86,219,0.45), rgba(26,86,219,0) 55%); padding: 20px; display: flex; flex-direction: column; justify-content: center; gap: 6px; position: relative; overflow: hidden">
+  <svg viewBox="0 0 120 120" width="120" height="120" aria-hidden="true" style="position: absolute; right: 4px; top: 6px"><rect x="28" y="40" width="64" height="38" rx="19" fill="#e8edf5"/><rect x="35" y="46" width="50" height="22" rx="11" fill="#fff3c4"/><circle cx="60" cy="73" r="2.5" fill="#1f2937"/></svg>
+  <span style="color: #67e8f9; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; position: relative">24 PRODUCTS</span>
+  <span style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 22px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: #ffffff; max-width: 210px; position: relative">Light up every corner, no wiring.</span>
+</section>
+
+<div style="position: sticky; top: 0; z-index: 2; margin-top: 12px; padding: 8px 16px; background: #f5f7fb; display: flex; gap: 8px">
+  <button type="button" style="flex: 1; height: 44px; border-radius: 12px; border: 1px solid #d6dce8; background: #ffffff; color: #111827; font: 600 15px Inter, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></svg>
+    Filter
+    <sc-if value="{{activeCount}}" hint-placeholder-val="{{true}}"><span style="min-width: 20px; height: 20px; border-radius: 10px; background: #1a56db; color: #ffffff; font-size: 12px; display: flex; align-items: center; justify-content: center; padding: 0 5px; box-sizing: border-box">{{activeCount}}</span></sc-if>
+  </button>
+  <button type="button" style="flex: 1; height: 44px; border-radius: 12px; border: 1px solid #d6dce8; background: #ffffff; color: #111827; font: 600 15px Inter, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 16-4 4-4-4M17 20V4M3 8l4-4 4 4M7 4v16"/></svg>
+    Popular
+  </button>
+</div>
+
+<div class="noscroll" style="display: flex; gap: 8px; overflow-x: auto; padding: 4px 16px 8px">
+  <sc-for list="{{chips}}" as="c" hint-placeholder-count="4">
+    <sc-if value="{{c.on}}" hint-placeholder-val="{{false}}">
+      <button type="button" aria-pressed="true" onClick="{{c.toggle}}" style="flex: 0 0 auto; height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid #1a56db; background: #eef4ff; color: #0d3b8f; font: 600 14px Inter, system-ui, sans-serif; display: flex; align-items: center; gap: 6px; cursor: pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>{{c.label}}</button>
+    </sc-if>
+    <sc-if value="{{c.off}}" hint-placeholder-val="{{true}}">
+      <button type="button" aria-pressed="false" onClick="{{c.toggle}}" style="flex: 0 0 auto; height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid #d6dce8; background: #ffffff; color: #374151; font: 500 14px Inter, system-ui, sans-serif; cursor: pointer">{{c.label}}</button>
+    </sc-if>
+  </sc-for>
+</div>
+
+<div style="padding: 4px 16px 10px; font-size: 14px; color: #5b6475">Showing 6 of 24</div>
+
+<div style="padding: 0 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+  <sc-for list="{{products}}" as="p" hint-placeholder-count="6">
+    <a href="Product.dc.html" style="display: flex; flex-direction: column; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 20px rgba(13,59,143,0.08); text-decoration: none; color: #111827; overflow: hidden">
+      <div style="position: relative; aspect-ratio: 1 / 1; background: #eef1f6; display: flex; align-items: center; justify-content: center">
+        <sc-if value="{{p.art.lamp}}" hint-placeholder-val="{{false}}"><svg viewBox="0 0 120 120" width="80%" height="80%" aria-hidden="true"><defs><radialGradient id="glLampC"><stop offset="0" stop-color="#ffd27a" stop-opacity="0.75"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient></defs><circle cx="60" cy="58" r="52" fill="url(#glLampC)"/><rect x="28" y="40" width="64" height="38" rx="19" fill="#ffffff" stroke="#cfd6e3" stroke-width="1.5"/><rect x="35" y="46" width="50" height="22" rx="11" fill="#fff1c2"/><circle cx="60" cy="73" r="2.5" fill="#1f2937"/></svg></sc-if>
+        <sc-if value="{{p.art.spot}}" hint-placeholder-val="{{false}}"><svg viewBox="0 0 120 120" width="80%" height="80%" aria-hidden="true"><defs><linearGradient id="bmSpotC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a" stop-opacity="0.9"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></linearGradient></defs><path d="M46 44 74 44 102 112 18 112Z" fill="url(#bmSpotC)"/><rect x="40" y="16" width="40" height="30" rx="8" fill="#1f2937"/><rect x="44" y="40" width="32" height="6" rx="3" fill="#fff4cc"/><rect x="56" y="8" width="8" height="10" rx="2" fill="#374151"/></svg></sc-if>
+        <sc-if value="{{p.art.strip}}" hint-placeholder-val="{{false}}"><svg viewBox="0 0 120 120" width="80%" height="80%" aria-hidden="true"><path d="M12 76C32 40 52 104 72 64S104 40 110 58" fill="none" stroke="#d3d9e4" stroke-width="12" stroke-linecap="round"/><circle cx="22" cy="63" r="4" fill="#22d3ee"/><circle cx="40" cy="66" r="4" fill="#1a56db"/><circle cx="56" cy="78" r="4" fill="#a855f7"/><circle cx="72" cy="64" r="4" fill="#f59e0b"/><circle cx="90" cy="49" r="4" fill="#ec4899"/><circle cx="106" cy="53" r="4" fill="#22c55e"/></svg></sc-if>
+        <sc-if value="{{p.art.bulb}}" hint-placeholder-val="{{false}}"><svg viewBox="0 0 120 120" width="80%" height="80%" aria-hidden="true"><defs><radialGradient id="glBulbC"><stop offset="0" stop-color="#a5b4fc" stop-opacity="0.7"/><stop offset="1" stop-color="#22d3ee" stop-opacity="0"/></radialGradient></defs><circle cx="60" cy="50" r="46" fill="url(#glBulbC)"/><circle cx="60" cy="48" r="26" fill="#ffffff" stroke="#cfd6e3" stroke-width="1.5"/><path d="M48 70h24v14a6 6 0 0 1-6 6H54a6 6 0 0 1-6-6z" fill="#9ca3af"/><path d="M50 76h20M50 82h20" stroke="#6b7280" stroke-width="2"/></svg></sc-if>
+        <sc-if value="{{p.art.ring}}" hint-placeholder-val="{{false}}"><svg viewBox="0 0 120 120" width="80%" height="80%" aria-hidden="true"><defs><radialGradient id="glRingC"><stop offset="0.55" stop-color="#ffffff" stop-opacity="0"/><stop offset="0.7" stop-color="#fff1c2" stop-opacity="0.9"/><stop offset="1" stop-color="#fff1c2" stop-opacity="0"/></radialGradient></defs><circle cx="60" cy="50" r="44" fill="url(#glRingC)"/><circle cx="60" cy="50" r="30" fill="none" stroke="#ffffff" stroke-width="9"/><circle cx="60" cy="50" r="30" fill="none" stroke="#cfd6e3" stroke-width="1"/><path d="M60 82v28M60 110l-14 6M60 110l14 6" stroke="#374151" stroke-width="3" stroke-linecap="round"/></svg></sc-if>
+        <sc-if value="{{p.art.cabinet}}" hint-placeholder-val="{{false}}"><svg viewBox="0 0 120 120" width="80%" height="80%" aria-hidden="true"><defs><linearGradient id="bmCabC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a" stop-opacity="0.8"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></linearGradient></defs><rect x="6" y="24" width="108" height="16" rx="3" fill="#cbd2de"/><path d="M14 46h92l10 52H4Z" fill="url(#bmCabC)"/><rect x="14" y="40" width="92" height="8" rx="4" fill="#ffffff" stroke="#cfd6e3"/><rect x="18" y="42" width="70" height="4" rx="2" fill="#fff1c2"/><circle cx="98" cy="44" r="2" fill="#1f2937"/></svg></sc-if>
+        <sc-if value="{{p.badge}}" hint-placeholder-val="{{false}}"><span style="position: absolute; top: 10px; left: 10px; padding: 4px 8px; border-radius: 8px; background: #f59e0b; color: #0b1220; font-size: 12px; font-weight: 700">{{p.badge}}</span></sc-if>
+      </div>
+      <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 15px; font-weight: 500; line-height: 1.35; height: 40px; overflow: hidden">{{p.name}}</div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="display: flex; flex-direction: column">
+            <span style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums">{{p.price}}</span>
+            <span style="font-size: 13px; color: #6b7385; text-decoration: line-through; height: 18px">{{p.compare}}</span>
+          </div>
+          <span aria-hidden="true" style="margin-left: auto; width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #1a56db, #0d3b8f); color: #ffffff; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+        </div>
+      </div>
+    </a>
+  </sc-for>
+</div>
+
+<div style="padding: 20px 16px 0; display: flex; flex-direction: column; align-items: center; gap: 10px">
+  <div style="width: 100%; height: 4px; border-radius: 2px; background: #e2e7f0; overflow: hidden"><div style="width: 25%; height: 4px; background: #1a56db"></div></div>
+  <button type="button" style="width: 100%; height: 48px; border-radius: 12px; border: 1px solid #1a56db; background: #ffffff; color: #1a56db; font: 600 16px Inter, system-ui, sans-serif; cursor: pointer">Load more</button>
+</div>
+
+<div style="flex: 1"></div>
+
+<nav aria-label="Primary" style="position: absolute; left: 0; right: 0; bottom: 0; height: 72px; background: #ffffff; border-top: 1px solid #e6eaf2; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding-bottom: 6px; box-sizing: border-box">
+  <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #5b6475; font-size: 12px; font-weight: 500; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></svg>Home</a>
+  <a href="Category.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #1a56db; font-size: 12px; font-weight: 600; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Categories</a>
+  <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #5b6475; font-size: 12px; font-weight: 500; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>Search</a>
+  <a href="Cart.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #5b6475; font-size: 12px; font-weight: 500; text-decoration: none; position: relative"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Cart<span style="position: absolute; top: 9px; left: 50%; margin-left: 4px; min-width: 16px; height: 16px; border-radius: 8px; background: #1a56db; color: #ffffff; font-size: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center">2</span></a>
+  <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #5b6475; font-size: 12px; font-weight: 500; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Account</a>
+</nav>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1520}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { on: { Rechargeable: true } };
+  }
+  renderVals() {
+    const tk = (n) => (n == null ? null : '৳' + n.toLocaleString('en-IN'));
+    const off = (p, c) => (c ? '-' + Math.round((1 - p / c) * 100) + '%' : null);
+    const mk = (name, kind, price, compare) => ({ name: name, art: { [kind]: true }, price: tk(price), compare: tk(compare), badge: off(price, compare) });
+    const on = this.state.on;
+    const labels = ['Rechargeable', 'Motion sensor', 'Under ৳1,000', 'Warm white', 'Smart / App'];
+    const chips = labels.map((label) => ({
+      label: label,
+      on: !!on[label],
+      off: !on[label],
+      toggle: () => this.setState({ on: Object.assign({}, on, { [label]: !on[label] }) })
+    }));
+    const activeCount = labels.filter((l) => on[l]).length || null;
+    return {
+      chips: chips,
+      activeCount: activeCount,
+      products: [
+        mk('Rechargeable LED Night Light', 'lamp', 1190, 1490),
+        mk('Motion Sensor Cabinet Light', 'cabinet', 590, null),
+        mk('LED Spotlight', 'spot', 1490, null),
+        mk('RGB LED Strip Light', 'strip', 1190, 1490),
+        mk('LED Ring Light 10 inch', 'ring', 1290, 1590),
+        mk('Smart LED Bulb 9W', 'bulb', 690, 890)
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

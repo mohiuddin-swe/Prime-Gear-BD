@@ -2,53 +2,41 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Grid2x2, Home, Search, ShoppingCart, User } from "lucide-react";
-import { cn } from "@primegear/ui/cn";
-import { ICON_STROKE } from "@primegear/ui/icon";
+import { BottomNav as BottomNavBar, defaultBottomNavItems } from "@primegear/ui/bottom-nav";
+import { useCart } from "@/components/cart/cart-provider";
 
-const items = [
-  { href: "/", label: "Home", Icon: Home },
-  { href: "/categories", label: "Categories", Icon: Grid2x2 },
-  { href: "/search", label: "Search", Icon: Search },
-  { href: "/cart", label: "Cart", Icon: ShoppingCart },
-  { href: "/account", label: "Account", Icon: User },
-];
+type Section = "home" | "categories" | "search" | "account";
 
-/** Mobile only: hidden from md up. */
-export function BottomNav({ cartCount = 0 }: { cartCount?: number }) {
+const activeSection = (pathname: string): Section | undefined => {
+  if (pathname === "/") return "home";
+  if (pathname.startsWith("/categories") || pathname.startsWith("/product-category")) {
+    return "categories";
+  }
+  if (pathname.startsWith("/search")) return "search";
+  if (pathname.startsWith("/account")) return "account";
+  return undefined;
+};
+
+/** Mobile only: hidden from md up. Cart opens the drawer instead of a page. */
+export function BottomNav() {
   const pathname = usePathname();
+  const { openCart, itemCount } = useCart();
+  // The checkout is a focused page: its own pinned order bar takes the place of the navigation
+  if (pathname.startsWith("/checkout")) return null;
+  // Product pages pin their order bar (total, cart, Order now, WhatsApp) where the navigation sits
+  if (pathname.startsWith("/product/")) return null;
+  // The categories screen is a full-screen menu with its own close button
+  if (pathname.startsWith("/categories")) return null;
+
   return (
-    <nav
-      aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-ink-900/10 bg-white pb-[env(safe-area-inset-bottom)] md:hidden"
-    >
-      <ul className="grid grid-cols-5">
-        {items.map(({ href, label, Icon }) => {
-          const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
-          return (
-            <li key={href}>
-              <Link
-                href={href}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "relative flex min-h-14 flex-col items-center justify-center gap-0.5 text-sm font-medium",
-                  active ? "text-brand-600" : "text-ink-900",
-                )}
-              >
-                <span className="relative">
-                  <Icon size={24} strokeWidth={ICON_STROKE} aria-hidden="true" />
-                  {href === "/cart" && cartCount > 0 && (
-                    <span className="absolute -right-2.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-600 px-1 text-sm font-bold leading-none tabular-nums text-white">
-                      {cartCount > 99 ? "99+" : cartCount}
-                    </span>
-                  )}
-                </span>
-                {label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+    <BottomNavBar
+      LinkComponent={Link}
+      items={defaultBottomNavItems({
+        active: activeSection(pathname),
+        cartCount: itemCount,
+        onCartClick: openCart,
+        hrefs: { categories: "/categories/", search: "/search/", account: "/account/" },
+      })}
+    />
   );
 }

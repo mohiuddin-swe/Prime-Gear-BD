@@ -1,42 +1,38 @@
 import Link from "next/link";
 import { Logo } from "@primegear/ui";
+import { categoryPath } from "@/lib/site";
 
+// TODO: Track order / Return policy / About us / Contact (as in the mockup) once those pages exist
 const links = [
-  { href: "/product-category/smart-home/", label: "Smart Home" },
-  { href: "/product-category/led-lighting/", label: "LED Lighting" },
-  { href: "/product-category/gadgets/", label: "Gadgets" },
-  { href: "/product-category/accessories/", label: "Accessories" },
+  { href: categoryPath("smart-home"), label: "Smart Home" },
+  { href: categoryPath("led-lighting"), label: "LED Lighting" },
+  { href: categoryPath("gadgets"), label: "Gadgets" },
+  { href: categoryPath("accessories"), label: "Accessories" },
 ];
 
+/** Dark footer. pb-24 on phones keeps the last row clear of the 72 px bottom navigation. */
 export function SiteFooter() {
   return (
-    <footer className="bg-ink-950 pb-24 text-slate-300 md:pb-0">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-[1.5fr_1fr] md:px-6 md:py-14">
-        <div className="space-y-3">
-          <Logo size="desktop" tone="dark" />
-          <p className="font-heading text-base font-bold tracking-widest text-glow">
-            GEAR UP · LEVEL UP
-          </p>
-          <p className="max-w-sm text-base">
-            Smart home, LED lighting, electronics and gadgets, delivered across Bangladesh.
-          </p>
+    <footer className="bg-ink-950 text-mist">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 pb-24 pt-6 md:flex-row md:items-start md:justify-between md:gap-8 md:px-6 md:py-10">
+        <div className="flex flex-col gap-3">
+          <Logo mark={false} tone="dark" className="self-start" />
+          <p className="text-xs font-semibold tracking-tagline text-glow-soft">GEAR UP · LEVEL UP</p>
         </div>
         <nav aria-label="Shop">
-          <h2 className="mb-2 font-heading text-base font-bold text-white">Shop</h2>
-          <ul>
+          <ul className="flex flex-wrap gap-x-4.5 text-sm">
             {links.map((l) => (
+              // 44 px rows for the tap target; the mockup's 4 px row gap is the leading inside them
               <li key={l.href}>
-                <Link href={l.href} className="flex min-h-11 items-center text-base">
+                <Link href={l.href} className="flex min-h-11 items-center text-mist">
                   {l.label}
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
-      </div>
-      <div className="border-t border-white/10">
-        <p className="mx-auto max-w-7xl px-4 py-4 text-sm md:px-6">
-          © {new Date().getFullYear()} Prime Gear BD. All rights reserved.
+        <p className="hidden text-sm md:block md:self-end">
+          © {new Date().getFullYear()} Prime Gear BD
         </p>
       </div>
     </footer>

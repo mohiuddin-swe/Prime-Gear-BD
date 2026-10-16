@@ -328,6 +328,9 @@ importers:
         specifier: ^18.0.8
         version: 18.0.8
     devDependencies:
+      '@primegear/shared':
+        specifier: workspace:*
+        version: link:../shared
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3

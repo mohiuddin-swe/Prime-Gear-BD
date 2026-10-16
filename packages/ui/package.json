@@ -13,7 +13,17 @@
     "./discount-badge": "./src/discount-badge.tsx",
     "./overlay": "./src/overlay.tsx",
     "./skeleton": "./src/skeleton.tsx",
-    "./product-card": "./src/product-card.tsx"
+    "./product-card": "./src/product-card.tsx",
+    "./logo": "./src/logo.tsx",
+    "./icon-button": "./src/icon-button.tsx",
+    "./header": "./src/header.tsx",
+    "./bottom-nav": "./src/bottom-nav.tsx",
+    "./trust-strip": "./src/trust-strip.tsx",
+    "./section-dark": "./src/section-dark.tsx",
+    "./selectable-card": "./src/selectable-card.tsx",
+    "./quantity-stepper": "./src/quantity-stepper.tsx",
+    "./accordion": "./src/accordion.tsx",
+    "./sticky-action-bar": "./src/sticky-action-bar.tsx"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

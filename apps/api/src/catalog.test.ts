@@ -6,6 +6,7 @@ const prisma = vi.hoisted(() => ({
   category: { findMany: vi.fn(), findFirst: vi.fn() },
   product: { findMany: vi.fn(), findFirst: vi.fn(), count: vi.fn() },
   orderItem: { groupBy: vi.fn() },
+  review: { aggregate: vi.fn(), count: vi.fn(), findMany: vi.fn() },
 }));
 vi.mock("./lib/prisma", () => ({ getPrisma: () => prisma }));
 // Caching has its own tests; here every read goes straight to the loader
@@ -41,6 +42,9 @@ beforeEach(() => {
   vi.resetAllMocks();
   prisma.store.findUnique.mockResolvedValue({ id: "store_1" });
   prisma.category.findMany.mockResolvedValue(categories);
+  prisma.review.aggregate.mockResolvedValue({ _avg: { rating: null }, _count: 0 });
+  prisma.review.count.mockResolvedValue(0);
+  prisma.review.findMany.mockResolvedValue([]);
 });
 
 describe("GET /api/v1/products", () => {
@@ -222,6 +226,82 @@ describe("GET /api/v1/products/:slug", () => {
     expect(prisma.product.findMany.mock.calls[0]![0].where).toMatchObject({
       categoryId: "c_led",
       id: { not: "a" },
+    });
+  });
+
+  it("returns page content, the dark-room image and a published review summary", async () => {
+    prisma.product.findFirst.mockResolvedValue({
+      ...detail,
+      subtitle: "Dual-sided spotlight",
+      features: [{ icon: "battery", title: "1800mAh battery", text: "Up to 8 hours." }],
+      boxContents: [{ qty: 2, item: "Mounting screws" }],
+      lightModes: [{ label: "Warm", color: "#ffd27a" }],
+      specs: null,
+      images: [
+        ...detail.images,
+        {
+          id: "i2",
+          url: "https://img/dark.jpg",
+          alt: "On a wall",
+          kind: "DARK_ROOM",
+          variantId: null,
+        },
+      ],
+    });
+    prisma.product.findMany.mockResolvedValue([]);
+    prisma.review.aggregate.mockResolvedValue({ _avg: { rating: 4.6667 }, _count: 3 });
+    prisma.review.count.mockResolvedValue(0);
+    prisma.review.findMany.mockResolvedValue([
+      {
+        id: "r1",
+        name: "Rahim",
+        district: "Dhaka",
+        rating: 5,
+        text: "Bright",
+        createdAt: new Date("2026-10-01T00:00:00Z"),
+      },
+    ]);
+
+    const res = await request(app).get("/api/v1/products/product-a");
+
+    expect(res.body.data).toMatchObject({
+      subtitle: "Dual-sided spotlight",
+      features: [{ icon: "battery", title: "1800mAh battery" }],
+      boxContents: [{ qty: 2, item: "Mounting screws" }],
+      lightModes: [{ label: "Warm", color: "#ffd27a" }],
+      specs: [],
+      darkImage: { url: "https://img/dark.jpg", alt: "On a wall" },
+      reviews: {
+        average: 4.7,
+        count: 3,
+        allVerified: true,
+        latest: [{ id: "r1", name: "Rahim", createdAt: "2026-10-01T00:00:00.000Z" }],
+      },
+    });
+    expect(prisma.review.aggregate.mock.calls[0]![0].where).toEqual({
+      storeId: "store_1",
+      productId: "a",
+      isPublished: true,
+    });
+  });
+
+  it("drops content that no longer matches its schema instead of failing the page", async () => {
+    prisma.product.findFirst.mockResolvedValue({
+      ...detail,
+      // 5 features (max is 4) and an unknown icon
+      features: Array.from({ length: 5 }, () => ({ icon: "rocket", title: "x", text: "y" })),
+      lightModes: [{ label: "Warm", color: "orange" }],
+    });
+    prisma.product.findMany.mockResolvedValue([]);
+
+    const res = await request(app).get("/api/v1/products/product-a");
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({
+      features: [],
+      lightModes: [],
+      darkImage: null,
+      reviews: { average: 0, count: 0, allVerified: false, latest: [] },
     });
   });
 

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cart — Prime Gear BD</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1a56db}a:hover{color:#0d3b8f}
+.noscroll{scrollbar-width:none}.noscroll::-webkit-scrollbar{display:none}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #4a5263; font-family: Inter, system-ui, sans-serif; color: #111827; position: relative; overflow: hidden">
+
+<div aria-hidden="true" style="position: absolute; inset: 0; background: #eef1f6; opacity: 0.35"></div>
+
+<section role="dialog" aria-label="Your cart" style="position: absolute; left: 0; right: 0; bottom: 0; height: 790px; border-radius: 24px 24px 0 0; background: #f5f7fb; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 -12px 40px rgba(11,18,32,0.3)">
+
+  <div style="background: #ffffff; padding: 8px 8px 12px 16px; display: flex; flex-direction: column; gap: 10px">
+    <span aria-hidden="true" style="align-self: center; width: 40px; height: 4px; border-radius: 2px; background: #d6dce8"></span>
+    <div style="display: flex; align-items: center">
+      <h1 style="margin: 0; flex: 1; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 20px; font-weight: 700">Your cart <span style="font-weight: 600; color: #5b6475">({{count}})</span></h1>
+      <a href="Product.dc.html" aria-label="Close cart" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #111827"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></a>
+    </div>
+    <div style="margin-right: 8px; padding: 12px; border-radius: 12px; background: #eef4ff; display: flex; flex-direction: column; gap: 8px">
+      <sc-if value="{{freeReached}}" hint-placeholder-val="{{false}}">
+        <span style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #15803d"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>You unlocked free delivery</span>
+      </sc-if>
+      <sc-if value="{{freeNotReached}}" hint-placeholder-val="{{true}}">
+        <span style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #0d3b8f"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62L18.3 9.38A1 1 0 0 0 17.52 9H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg><span>Add <strong style="font-weight: 700">{{awayLabel}}</strong> more for free delivery</span></span>
+      </sc-if>
+      <div style="height: 6px; border-radius: 3px; background: #d4def5; overflow: hidden"><div style="height: 6px; border-radius: 3px; background: linear-gradient(135deg, #1a56db, #0d3b8f); width: {{progress}}"></div></div>
+    </div>
+  </div>
+
+  <div class="noscroll" style="flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+    <sc-for list="{{items}}" as="it" hint-placeholder-count="2">
+      <div style="padding: 12px; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 20px rgba(13,59,143,0.08); display: flex; gap: 12px">
+        <span style="width: 80px; height: 80px; flex: 0 0 auto; border-radius: 12px; background: #eef1f6; display: flex; align-items: center; justify-content: center">
+          <sc-if value="{{it.art.lamp}}" hint-placeholder-val="{{false}}"><svg viewBox="0 0 120 120" width="66" height="66" aria-hidden="true"><defs><radialGradient id="glLampK"><stop offset="0" stop-color="#ffd27a" stop-opacity="0.75"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient></defs><circle cx="60" cy="58" r="52" fill="url(#glLampK)"/><rect x="28" y="40" width="64" height="38" rx="19" fill="#ffffff" stroke="#cfd6e3" stroke-width="1.5"/><rect x="35" y="46" width="50" height="22" rx="11" fill="#fff1c2"/></svg></sc-if>
+          <sc-if value="{{it.art.holder}}" hint-placeholder-val="{{false}}"><svg viewBox="0 0 120 120" width="66" height="66" aria-hidden="true"><rect x="22" y="18" width="76" height="44" rx="8" fill="#111827"/><rect x="26" y="22" width="68" height="36" rx="5" fill="#1a56db" opacity="0.35"/><rect x="55" y="60" width="10" height="22" rx="3" fill="#4b5563"/><ellipse cx="60" cy="94" rx="30" ry="12" fill="#1f2937"/></svg></sc-if>
+        </span>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+          <div style="display: flex; gap: 8px; align-items: flex-start">
+            <span style="flex: 1; font-size: 15px; font-weight: 600; line-height: 1.3">{{it.name}}</span>
+            <button type="button" aria-label="Remove item" style="width: 32px; height: 32px; margin: -6px -6px 0 0; border: 0; border-radius: 8px; background: transparent; color: #6b7385; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+          </div>
+          <span style="font-size: 13px; color: #5b6475">{{it.variant}}</span>
+          <sc-if value="{{it.deal}}" hint-placeholder-val="{{false}}"><span style="align-self: flex-start; padding: 2px 8px; border-radius: 6px; background: #eef4ff; color: #0d3b8f; font-size: 12px; font-weight: 600">{{it.deal}}</span></sc-if>
+          <div style="margin-top: 4px; display: flex; align-items: center; justify-content: space-between">
+            <div style="display: flex; align-items: center; border: 1px solid #d6dce8; border-radius: 10px; overflow: hidden">
+              <button type="button" aria-label="Decrease quantity" onClick="{{it.dec}}" style="width: 40px; height: 40px; border: 0; background: #ffffff; color: #111827; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+              <span style="width: 32px; text-align: center; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums">{{it.qty}}</span>
+              <button type="button" aria-label="Increase quantity" onClick="{{it.inc}}" style="width: 40px; height: 40px; border: 0; background: #ffffff; color: #111827; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <span style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums">{{it.lineLabel}}</span>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+
+    <div style="margin-top: 4px; display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 16px; font-weight: 700">Complete your setup</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+        <div style="padding: 10px; border-radius: 14px; background: #ffffff; box-shadow: 0 4px 20px rgba(13,59,143,0.08); display: flex; flex-direction: column; gap: 8px">
+          <span style="height: 72px; border-radius: 10px; background: #eef1f6; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 120 120" width="70" height="70" aria-hidden="true"><rect x="6" y="40" width="108" height="10" rx="5" fill="#ffffff" stroke="#cfd6e3"/><rect x="12" y="43" width="80" height="4" rx="2" fill="#fff1c2"/><path d="M14 50h92l8 40H6Z" fill="#ffd27a" opacity="0.3"/></svg></span>
+          <span style="font-size: 13px; font-weight: 500; line-height: 1.3">Motion Sensor Cabinet Light</span>
+          <button type="button" style="height: 40px; border-radius: 10px; border: 1px solid #1a56db; background: #ffffff; color: #1a56db; font: 600 14px Inter, system-ui, sans-serif; cursor: pointer">+ Add ৳590</button>
+        </div>
+        <div style="padding: 10px; border-radius: 14px; background: #ffffff; box-shadow: 0 4px 20px rgba(13,59,143,0.08); display: flex; flex-direction: column; gap: 8px">
+          <span style="height: 72px; border-radius: 10px; background: #eef1f6; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 120 120" width="64" height="64" aria-hidden="true"><circle cx="60" cy="48" r="26" fill="#ffffff" stroke="#cfd6e3" stroke-width="1.5"/><path d="M48 70h24v14a6 6 0 0 1-6 6H54a6 6 0 0 1-6-6z" fill="#9ca3af"/></svg></span>
+          <span style="font-size: 13px; font-weight: 500; line-height: 1.3">Smart LED Bulb 9W</span>
+          <button type="button" style="height: 40px; border-radius: 10px; border: 1px solid #1a56db; background: #ffffff; color: #1a56db; font: 600 14px Inter, system-ui, sans-serif; cursor: pointer">+ Add ৳690</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background: #ffffff; padding: 14px 16px 18px; border-top: 1px solid #e6eaf2; display: flex; flex-direction: column; gap: 8px">
+    <div style="display: flex; justify-content: space-between; font-size: 15px"><span style="color: #5b6475">Subtotal</span><span style="font-weight: 600; font-variant-numeric: tabular-nums">{{subtotalLabel}}</span></div>
+    <div style="display: flex; justify-content: space-between; font-size: 15px"><span style="color: #15803d">You save</span><span style="font-weight: 600; color: #15803d; font-variant-numeric: tabular-nums">{{savedLabel}}</span></div>
+    <div style="display: flex; justify-content: space-between; font-size: 14px; color: #5b6475"><span>Delivery</span><span>Calculated at checkout</span></div>
+    <a href="Checkout.dc.html" style="margin-top: 6px; height: 54px; border-radius: 12px; background: linear-gradient(135deg, #1a56db, #0d3b8f); color: #ffffff; font-weight: 700; font-size: 17px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; box-shadow: 0 8px 20px rgba(26,86,219,0.35)">Checkout · {{subtotalLabel}}</a>
+    <span style="text-align: center; font-size: 13px; color: #5b6475">Cash on delivery available</span>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"freeDeliveryAt":{"editor":"int","default":3500,"min":0,"step":100,"section":"Pricing"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { lamp: 2, holder: 1 };
+  }
+  renderVals() {
+    const s = this.state;
+    const tk = (n) => '৳' + n.toLocaleString('en-IN');
+    const threshold = this.props.freeDeliveryAt ?? 3500;
+    const pct = s.lamp >= 3 ? 12 : s.lamp === 2 ? 8 : 0;
+    const lampUnit = Math.round(1490 * (1 - pct / 100));
+    const lampLine = lampUnit * s.lamp;
+    const holderLine = 890 * s.holder;
+    const subtotal = lampLine + holderLine;
+    const saved = (1750 * s.lamp - lampLine) + (1190 * s.holder - holderLine);
+    const set = (key, n) => this.setState({ [key]: Math.max(1, Math.min(10, n)) });
+    const away = Math.max(0, threshold - subtotal);
+    return {
+      count: s.lamp + s.holder,
+      items: [
+        { name: '360° Magnetic LED Wall Lamp', variant: 'White · SKU SL-01', art: { lamp: true }, qty: s.lamp, deal: pct ? 'Bulk ' + pct + '% off applied' : null, lineLabel: tk(lampLine), dec: () => set('lamp', s.lamp - 1), inc: () => set('lamp', s.lamp + 1) },
+        { name: 'Vacuum Magnetic Phone Holder', variant: 'Black', art: { holder: true }, qty: s.holder, deal: null, lineLabel: tk(holderLine), dec: () => set('holder', s.holder - 1), inc: () => set('holder', s.holder + 1) }
+      ],
+      subtotalLabel: tk(subtotal),
+      savedLabel: tk(saved),
+      awayLabel: tk(away),
+      freeReached: away === 0,
+      freeNotReached: away > 0,
+      progress: Math.min(100, Math.round((subtotal / threshold) * 100)) + '%'
+    };
+  }
+}
+</script>
+</body>
+</html>

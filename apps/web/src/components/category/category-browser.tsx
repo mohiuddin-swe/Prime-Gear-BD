@@ -1,9 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { SlidersHorizontal } from "lucide-react";
+import { ArrowDownUp, Check, SlidersHorizontal } from "lucide-react";
 import type { ProductCard, ProductSort } from "@primegear/shared";
+import { formatTaka } from "@primegear/shared/format";
 import { Button } from "@primegear/ui/button";
+import { cn } from "@primegear/ui/cn";
 import { ICON_STROKE } from "@primegear/ui/icon";
 import { BottomSheet } from "@primegear/ui/overlay";
 import { ProductCardSkeleton } from "@primegear/ui/skeleton";
@@ -19,6 +21,27 @@ const SORTS: { value: ProductSort; label: string }[] = [
   { value: "price_desc", label: "Price: high to low" },
 ];
 const LIMIT = 12;
+
+/** One-tap shortcuts for the same price / stock filters the sheet edits, so both stay in sync. */
+const QUICK_FILTERS: {
+  label: string;
+  isOn: (f: Filters) => boolean;
+  toggle: (f: Filters) => Filters;
+}[] = [
+  {
+    label: "In stock",
+    isOn: (f) => !!f.inStock,
+    toggle: (f) => ({ ...f, inStock: f.inStock ? undefined : true }),
+  },
+  ...[500, 1000].map((limit) => ({
+    label: `Under ${formatTaka(limit)}`,
+    isOn: (f: Filters) => f.maxPrice === limit - 1 && f.minPrice === undefined,
+    toggle: (f: Filters) =>
+      f.maxPrice === limit - 1 && f.minPrice === undefined
+        ? { ...f, maxPrice: undefined }
+        : { ...f, minPrice: undefined, maxPrice: limit - 1 },
+  })),
+];
 
 const toNumber = (v: string) => (v.trim() === "" ? undefined : Math.max(0, Math.floor(Number(v))));
 const countActive = (f: Filters) =>
@@ -112,6 +135,7 @@ export function CategoryBrowser({
   const [sort, setSort] = useState<ProductSort>("newest");
   const [filters, setFilters] = useState<Filters>({});
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const latest = useRef(0); // ignores responses from superseded requests
@@ -148,11 +172,31 @@ export function CategoryBrowser({
   const active = countActive(filters);
   const select =
     "h-12 rounded-btn border border-ink-900/15 bg-white px-3 text-base font-semibold md:h-11";
+  const barButton =
+    "flex h-11 flex-1 items-center justify-center gap-2 rounded-btn border border-line-strong bg-white text-copy font-semibold text-ink-900 transition motion-safe:active:-translate-y-px";
+  const sortLabel = SORTS.find((s) => s.value === sort)?.label;
 
   return (
     <div>
-      <div className="sticky top-[var(--header-h)] z-20 -mx-4 border-b border-ink-900/10 bg-surface/95 px-4 py-2 backdrop-blur md:mx-0 md:rounded-card md:border md:px-4">
-        <div className="flex items-center gap-2">
+      <div className="sticky top-0 z-20 -mx-4 bg-surface px-4 py-2 md:top-[var(--header-h)] md:mx-0 md:rounded-card md:border md:border-ink-900/10 md:bg-surface/95 md:backdrop-blur">
+        {/* Phones: Filter and Sort open bottom sheets */}
+        <div className="flex gap-2 md:hidden">
+          <button type="button" onClick={() => setSheetOpen(true)} className={barButton}>
+            <SlidersHorizontal size={18} strokeWidth={ICON_STROKE} aria-hidden="true" />
+            Filter
+            {active > 0 && (
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-600 px-1.25 text-xs text-white">
+                {active}
+              </span>
+            )}
+          </button>
+          <button type="button" onClick={() => setSortOpen(true)} className={barButton}>
+            <ArrowDownUp size={18} strokeWidth={ICON_STROKE} aria-hidden="true" />
+            {sortLabel}
+          </button>
+        </div>
+        {/* md and up: sort select and inline filter form */}
+        <div className="hidden items-center gap-2 md:flex">
           <label className="sr-only" htmlFor="sort">
             Sort by
           </label>
@@ -160,7 +204,7 @@ export function CategoryBrowser({
             id="sort"
             value={sort}
             onChange={(e) => load({ sort: e.target.value as ProductSort, filters, page: 1 })}
-            className={`${select} min-w-0 flex-1 md:flex-none`}
+            className={select}
           >
             {SORTS.map((s) => (
               <option key={s.value} value={s.value}>
@@ -168,11 +212,7 @@ export function CategoryBrowser({
               </option>
             ))}
           </select>
-          <Button variant="outline" onClick={() => setSheetOpen(true)} className="md:hidden">
-            <SlidersHorizontal size={20} strokeWidth={ICON_STROKE} aria-hidden="true" />
-            Filters{active > 0 && ` (${active})`}
-          </Button>
-          <div className="hidden md:ml-4 md:block">
+          <div className="ml-4">
             <FilterForm
               inline
               value={filters}
@@ -182,6 +222,33 @@ export function CategoryBrowser({
           </div>
         </div>
       </div>
+
+      <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 pt-1 [scrollbar-width:none] md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden">
+        {QUICK_FILTERS.map((q) => {
+          const on = q.isOn(filters);
+          return (
+            <li key={q.label} className="shrink-0">
+              <button
+                type="button"
+                aria-pressed={on}
+                disabled={loading}
+                onClick={() => load({ sort, filters: q.toggle(filters), page: 1 })}
+                className={cn(
+                  "relative flex h-9.5 items-center gap-1.5 rounded-full border px-3.5 text-sm transition",
+                  // 44 px hit area around the 38 px pill
+                  "after:absolute after:-inset-y-1 after:inset-x-0 after:content-['']",
+                  on
+                    ? "border-brand-600 bg-brand-50 font-semibold text-brand-800"
+                    : "border-line-strong bg-white font-medium text-ink-700",
+                )}
+              >
+                {on && <Check size={14} strokeWidth={2.5} aria-hidden="true" />}
+                {q.label}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
 
       <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)} title="Filters">
         {sheetOpen && (
@@ -196,13 +263,39 @@ export function CategoryBrowser({
         )}
       </BottomSheet>
 
-      <div className="space-y-4 pt-4" aria-busy={loading}>
-        <p className="text-base tabular-nums" aria-live="polite">
-          {total} {total === 1 ? "product" : "products"}
+      <BottomSheet open={sortOpen} onClose={() => setSortOpen(false)} title="Sort by">
+        <ul className="-my-2">
+          {SORTS.map((s) => (
+            <li key={s.value}>
+              <button
+                type="button"
+                aria-pressed={s.value === sort}
+                onClick={() => {
+                  setSortOpen(false);
+                  if (s.value !== sort) void load({ sort: s.value, filters, page: 1 });
+                }}
+                className={cn(
+                  "flex min-h-12 w-full items-center justify-between text-left text-base",
+                  s.value === sort ? "font-semibold text-brand-600" : "font-medium",
+                )}
+              >
+                {s.label}
+                {s.value === sort && (
+                  <Check size={20} strokeWidth={ICON_STROKE} aria-hidden="true" />
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </BottomSheet>
+
+      <div className="space-y-4 pt-1" aria-busy={loading}>
+        <p className="text-sm text-ink-500 tabular-nums" aria-live="polite">
+          Showing {items.length} of {total}
         </p>
 
         {items.length > 0 ? (
-          <ProductGrid products={items} />
+          <ProductGrid products={items} quickAdd />
         ) : (
           !loading && (
             <p className="rounded-card bg-white p-6 text-base shadow-card">
@@ -227,15 +320,28 @@ export function CategoryBrowser({
           </p>
         )}
 
-        {items.length < total && (
-          <Button
-            variant="outline"
-            className="w-full md:mx-auto md:w-auto md:px-10"
-            disabled={loading}
-            onClick={() => load({ sort, filters, page: page + 1 })}
-          >
-            Load more
-          </Button>
+        {total > 0 && (
+          <div className="flex flex-col items-center gap-2.5 pt-2.5 md:pt-4">
+            <div
+              aria-hidden="true"
+              className="h-1 w-full overflow-hidden rounded-full bg-line-track md:max-w-sm"
+            >
+              <div
+                className="h-1 bg-brand-600 transition-[width]"
+                style={{ width: `${Math.min(100, (items.length / total) * 100)}%` }}
+              />
+            </div>
+            {items.length < total && (
+              <Button
+                variant="outline"
+                className="w-full md:w-auto md:px-10"
+                disabled={loading}
+                onClick={() => load({ sort, filters, page: page + 1 })}
+              >
+                Load more
+              </Button>
+            )}
+          </div>
         )}
       </div>
     </div>

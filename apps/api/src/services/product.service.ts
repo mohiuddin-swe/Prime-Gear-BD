@@ -1,5 +1,14 @@
 import type { Prisma } from "@primegear/db";
-import type { ProductCard, ProductDetail, ProductListQuery } from "@primegear/shared";
+import {
+  boxContentsSchema,
+  lightModesSchema,
+  productFeaturesSchema,
+  productSpecsSchema,
+  type ProductCard,
+  type ProductDetail,
+  type ProductListQuery,
+} from "@primegear/shared";
+import type { z } from "zod";
 import { AppError } from "../lib/app-error";
 import { cached } from "../lib/cache";
 import { getPrisma } from "../lib/prisma";
@@ -7,6 +16,7 @@ import { descendantIds, loadActiveCategories } from "./category.service";
 import { cardInclude, toProductCard } from "./product-card";
 
 const RELATED_LIMIT = 8;
+const REVIEWS_SHOWN = 3;
 // Orders in these statuses never count towards "bestselling"
 const NOT_SOLD = ["CANCELLED", "RETURNED"] as const;
 
@@ -112,8 +122,39 @@ export async function listProducts(storeId: string, q: ProductListQuery) {
   });
 }
 
+/** JSON content columns: anything that no longer matches the schema renders as an empty section. */
+function parseContent<T extends z.ZodType>(schema: T, value: unknown): z.infer<T> | [] {
+  if (value == null) return [];
+  const parsed = schema.safeParse(value);
+  return parsed.success ? parsed.data : [];
+}
+
+async function reviewSummary(storeId: string, productId: string): Promise<ProductDetail["reviews"]> {
+  const prisma = getPrisma();
+  const where = { storeId, productId, isPublished: true };
+  const [stats, unverified, latest] = await Promise.all([
+    prisma.review.aggregate({ where, _avg: { rating: true }, _count: true }),
+    prisma.review.count({ where: { ...where, isVerified: false } }),
+    prisma.review.findMany({
+      where,
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take: REVIEWS_SHOWN,
+      select: { id: true, name: true, district: true, rating: true, text: true, createdAt: true },
+    }),
+  ]);
+  const count = stats._count;
+  return {
+    average: count ? Math.round((stats._avg.rating ?? 0) * 10) / 10 : 0,
+    count,
+    allVerified: count > 0 && unverified === 0,
+    latest: latest.map((r) => ({ ...r, createdAt: r.createdAt.toISOString() })),
+  };
+}
+
 export function getProductBySlug(storeId: string, slug: string) {
-  return cached<ProductDetail>(storeId, `product:${slug}`, async () => {
+  // Bump the key's version whenever ProductDetail changes shape, so entries cached by the
+  // previous release (missing new fields) are never served to the new storefront
+  return cached<ProductDetail>(storeId, `product:v2:${slug}`, async () => {
     const prisma = getPrisma();
     const product = await prisma.product.findFirst({
       where: { storeId, slug, status: "ACTIVE" },
@@ -152,9 +193,17 @@ export function getProductBySlug(storeId: string, slug: string) {
     // Card fields come from the cheapest variant, so compute them before sorting variants for display
     const byPrice = [...product.variants].sort((a, b) => a.price - b.price);
     const card = toProductCard({ ...product, variants: byPrice });
+    const dark = product.images.find((i) => i.kind === "DARK_ROOM");
     return {
       ...card,
+      subtitle: product.subtitle,
       description: product.description,
+      features: parseContent(productFeaturesSchema, product.features),
+      boxContents: parseContent(boxContentsSchema, product.boxContents),
+      lightModes: parseContent(lightModesSchema, product.lightModes),
+      specs: parseContent(productSpecsSchema, product.specs),
+      darkImage: dark ? { url: dark.url, alt: dark.alt } : null,
+      reviews: await reviewSummary(storeId, product.id),
       tags: product.tags,
       seoTitle: product.seoTitle,
       seoDescription: product.seoDescription,

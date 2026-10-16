@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { TrustStrip } from "@primegear/ui";
+import { discountPercent } from "@primegear/shared/format";
 import { Breadcrumbs, type Crumb } from "@/components/layout/breadcrumbs";
+import { FeatureCards } from "@/components/product/feature-cards";
 import { Gallery } from "@/components/product/gallery";
-import { HowItWorks } from "@/components/product/how-it-works";
-import { ProductGrid } from "@/components/product/product-grid";
+import { LightModes } from "@/components/product/light-modes";
+import { ProductDetails } from "@/components/product/product-details";
+import { ProductHeader, ProductShareActions } from "@/components/product/product-header";
+import { ProductCardItem } from "@/components/product/product-grid";
 import { PurchasePanel } from "@/components/product/purchase-panel";
-import { SpecAccordions } from "@/components/product/spec-accordions";
+import { RatingLink, ReviewsSummary } from "@/components/product/reviews";
 import { getProduct, isNotFound } from "@/lib/api";
 import { JsonLd } from "@/lib/json-ld";
 import { isVideoUrl } from "@/lib/media";
 import { SITE_NAME, abs, categoryPath, productPath } from "@/lib/site";
-import { trustItems } from "@/lib/trust";
 
 export const revalidate = 300; // must be a literal for Next; matches REVALIDATE in lib/api
 
@@ -62,34 +64,91 @@ export default async function ProductPage({ params }: Props) {
   ];
 
   const stillImages = product.images.filter((i) => !isVideoUrl(i.url)).map((i) => i.url);
+  const photos = product.images.filter((i) => i.kind !== "DARK_ROOM");
+  const darkShots = product.images.filter((i) => i.kind === "DARK_ROOM");
+  const url = abs(path);
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8 px-4 pb-24 pt-2 md:space-y-12 md:px-6 md:pb-12">
-      <Breadcrumbs crumbs={crumbs} />
+    <>
+      <ProductHeader
+        slug={product.slug}
+        name={product.name}
+        url={url}
+        backHref={product.category ? categoryPath(product.category.slug) : "/"}
+        backLabel={product.category ? `Back to ${product.category.name}` : "Back to home"}
+        title={product.category?.name ?? SITE_NAME}
+      />
 
-      <div className="grid gap-6 md:grid-cols-2 md:gap-10">
-        <Gallery media={product.images} name={product.name} />
-        <div className="space-y-5">
-          <h1 className="font-heading text-2xl font-extrabold leading-tight md:text-3xl">
-            {product.name}
-          </h1>
-          {product.shortDescription && <p className="text-base">{product.shortDescription}</p>}
-          <PurchasePanel variants={product.variants} bulkTiers={product.bulkTiers} />
+      {/* Phones: full-bleed sections with their own 16 px margins, room at the bottom for the order bar */}
+      <div className="mx-auto max-w-7xl pb-36 md:px-6 md:pb-12 md:pt-2">
+        {/* Visible from md; on phones the header shows the category. The BreadcrumbList JSON-LD
+            inside is rendered either way (display: none doesn't remove it from the HTML). */}
+        <div className="hidden items-center justify-between gap-4 md:flex">
+          <Breadcrumbs crumbs={crumbs} />
+          <ProductShareActions slug={product.slug} name={product.name} url={url} />
         </div>
+
+        <div className="md:mt-4 md:grid md:grid-cols-2 md:items-start md:gap-10">
+          <div className="md:sticky md:top-24">
+            <Gallery
+              media={photos}
+              darkMedia={darkShots}
+              name={product.name}
+              discountPercent={discountPercent(product.price, product.comparePrice)}
+            />
+          </div>
+
+          <div className="md:flex md:flex-col md:gap-6">
+            <div>
+              <PurchasePanel
+                productId={product.id}
+                name={product.name}
+                url={url}
+                variants={product.variants}
+                bulkTiers={product.bulkTiers}
+                header={
+                  <>
+                    <h1 className="font-heading text-title font-bold tracking-heading md:text-3xl">
+                      {product.name}
+                    </h1>
+                    {product.subtitle && (
+                      <p className="-mt-1 text-copy text-ink-500">{product.subtitle}</p>
+                    )}
+                    <RatingLink reviews={product.reviews} />
+                  </>
+                }
+              />
+            </div>
+            <FeatureCards features={product.features} />
+            <LightModes modes={product.lightModes} />
+            <ProductDetails product={product} />
+          </div>
+        </div>
+
+        <div className="md:mt-6">
+          <ReviewsSummary reviews={product.reviews} />
+        </div>
+
+        {product.relatedProducts.length > 0 && (
+          <section aria-labelledby="related" className="flex flex-col gap-3 pt-6 md:pt-10">
+            <h2 id="related" className="px-4 font-heading text-lg font-bold md:px-0 md:text-xl">
+              You may also like
+            </h2>
+            <ul className="flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:grid md:grid-cols-4 md:gap-4 md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden">
+              {product.relatedProducts.slice(0, 8).map((p) => (
+                <li key={p.id} className="flex shrink-0 basis-37.5 md:basis-auto">
+                  <ProductCardItem
+                    product={p}
+                    variant="mini"
+                    className="w-full"
+                    sizes="(min-width: 1280px) 300px, (min-width: 768px) 25vw, 130px"
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
-
-      <TrustStrip items={trustItems} />
-      <HowItWorks />
-      <SpecAccordions product={product} />
-
-      {product.relatedProducts.length > 0 && (
-        <section aria-labelledby="related" className="space-y-3">
-          <h2 id="related" className="font-heading text-xl font-bold">
-            You may also like
-          </h2>
-          <ProductGrid products={product.relatedProducts.slice(0, 4)} />
-        </section>
-      )}
 
       <JsonLd
         data={{
@@ -114,6 +173,6 @@ export default async function ProductPage({ params }: Props) {
           })),
         }}
       />
-    </div>
+    </>
   );
 }

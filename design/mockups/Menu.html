@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Categories — Prime Gear BD</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1a56db}a:hover{color:#0d3b8f}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #f5f7fb; font-family: Inter, system-ui, sans-serif; color: #111827; display: flex; flex-direction: column; position: relative; overflow: hidden">
+
+<header style="background: #ffffff; padding: 10px 16px 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 0 #e6eaf2">
+  <div style="display: flex; align-items: center">
+    <h1 style="margin: 0; flex: 1; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.02em">Shop by category</h1>
+    <a href="Main.dc.html" aria-label="Close menu" style="width: 44px; height: 44px; margin-right: -10px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #111827"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></a>
+  </div>
+  <label style="display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; border-radius: 12px; background: #eef1f6; color: #5b6475">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="search" placeholder="Search all products" aria-label="Search products" style="flex: 1; min-width: 0; border: 0; background: transparent; font: 16px Inter, system-ui, sans-serif; color: #111827; outline: none">
+  </label>
+</header>
+
+<a href="Category.dc.html" style="margin: 14px 16px 0; padding: 16px; border-radius: 18px; background-color: #0b1220; background-image: radial-gradient(circle at 100% 50%, rgba(255,210,122,0.35), rgba(255,210,122,0) 45%); display: flex; align-items: center; gap: 14px; text-decoration: none">
+  <span style="width: 52px; height: 52px; border-radius: 14px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffd27a" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/></svg></span>
+  <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+    <span style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 17px; font-weight: 700; color: #ffffff">LED &amp; Smart Lights</span>
+    <span style="font-size: 13px; color: #b9c6da">Our bestselling category</span>
+  </span>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+</a>
+
+<div style="padding: 14px 16px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+  <sc-for list="{{cats}}" as="c" hint-placeholder-count="12">
+    <a href="Category.dc.html" style="height: 100px; padding: 10px 6px; box-sizing: border-box; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 20px rgba(13,59,143,0.06); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-decoration: none; color: #111827">
+      <span style="width: 40px; height: 40px; border-radius: 12px; background: #eef4ff; color: #1a56db; display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.icon}}"/></svg>
+      </span>
+      <span style="font-size: 13px; font-weight: 500; line-height: 1.25; text-align: center">{{c.name}}</span>
+    </a>
+  </sc-for>
+</div>
+
+<div style="flex: 1"></div>
+
+<div style="margin: 0 16px 16px; padding: 14px; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 20px rgba(13,59,143,0.06); display: flex; align-items: center; gap: 10px">
+  <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+    <span style="font-size: 13px; color: #5b6475">Need help ordering?</span>
+    <a href="tel:01567936080" style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 17px; font-weight: 700; color: #111827; text-decoration: none; font-variant-numeric: tabular-nums">01567-936080</a>
+  </span>
+  <a href="#" style="height: 44px; padding: 0 14px; border-radius: 12px; background: #16a34a; color: #ffffff; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 6px; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>WhatsApp</a>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const ic = {
+      car: 'M19 17h2v-4l-2-5H5L3 13v4h2M7 17a2 2 0 1 0 4 0 2 2 0 1 0-4 0M13 17a2 2 0 1 0 4 0 2 2 0 1 0-4 0',
+      desk: 'M9 21h6M12 17v4M4 3l8 6M12 9l4-2M16 7l2 4M18 11H14',
+      travel: 'm8 3 4 8 5-5 5 15H2L8 3z',
+      gadget: 'M5 2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2ZM12 18h.01',
+      care: 'M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7ZM12 6v6M9 9h6',
+      deco: 'm12 3 2.5 6 6.5.5-5 4 1.5 6.5L12 16.5 6.5 20 8 13.5l-5-4 6.5-.5z',
+      prod: 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11',
+      home: 'M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z',
+      creative: 'M12 19l7-7 3 3-7 7-3-3zM18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5zM2 2l7.59 7.59M11 11a2 2 0 1 0 0-.01',
+      mobile: 'M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2ZM11 18h2',
+      acc: 'M12 22v-5M9 8V2M15 8V2M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z',
+      diy: 'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z'
+    };
+    return {
+      cats: [
+        { name: 'Car Accessories', icon: ic.car },
+        { name: 'Workstation Lighting', icon: ic.desk },
+        { name: 'Travel & Outdoor', icon: ic.travel },
+        { name: 'Smart Gadgets', icon: ic.gadget },
+        { name: 'Personal Care', icon: ic.care },
+        { name: 'Decorative Lights', icon: ic.deco },
+        { name: 'Productivity Tools', icon: ic.prod },
+        { name: 'Home & Living Tech', icon: ic.home },
+        { name: 'Creative Corner', icon: ic.creative },
+        { name: 'Mobile Accessories', icon: ic.mobile },
+        { name: 'Accessories', icon: ic.acc },
+        { name: 'DIY Tools', icon: ic.diy }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

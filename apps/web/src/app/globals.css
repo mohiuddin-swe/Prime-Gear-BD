@@ -3,11 +3,11 @@
 
 /* Fixed sticky-header height so sticky bars below it can offset exactly (mobile 2 rows, md 1 row) */
 :root {
-  --header-h: 117px;
+  --header-h: 124px;
 }
 @media (min-width: 768px) {
   :root {
-    --header-h: 69px;
+    --header-h: 68px;
   }
 }
 
