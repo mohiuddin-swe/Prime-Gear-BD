@@ -15,7 +15,7 @@ async function getApiStatus(): Promise<string> {
 export default async function Home() {
   const status = await getApiStatus();
   return (
-    <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-3 px-4">
+    <main className="mx-auto flex min-h-[60dvh] max-w-xl flex-col justify-center gap-3 px-4">
       <h1 className="font-heading text-3xl font-extrabold">PRIME GEAR BD</h1>
       <p className="text-base">GEAR UP · LEVEL UP</p>
       <p className="text-base">

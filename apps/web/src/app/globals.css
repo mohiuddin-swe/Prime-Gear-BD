@@ -1,6 +1,33 @@
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
 
-body {
-  background: var(--color-surface, #f5f7fb);
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-surface text-ink-900 antialiased;
+  }
+  /* 16 px inputs so iOS Safari doesn't zoom on focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+  :focus-visible {
+    outline: 2px solid #1a56db;
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
