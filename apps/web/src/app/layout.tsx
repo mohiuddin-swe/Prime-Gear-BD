@@ -1,10 +1,5 @@
 import type { Metadata } from "next";
 import { Hind_Siliguri, Inter, Plus_Jakarta_Sans } from "next/font/google";
-import { AttributionCapture } from "@/components/tracking/attribution-capture";
-import { CartProvider } from "@/components/cart/cart-provider";
-import { BottomNav } from "@/components/layout/bottom-nav";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -28,15 +23,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${heading.variable} ${body.variable} ${bangla.variable}`}>
-      <body className="font-sans text-base text-ink-900">
-        <AttributionCapture />
-        <CartProvider>
-          <SiteHeader />
-          <main>{children}</main>
-          <SiteFooter />
-          <BottomNav />
-        </CartProvider>
-      </body>
+      {/* Storefront chrome lives in (shop)/layout.tsx; /admin brings its own shell */}
+      <body className="font-sans text-base text-ink-900">{children}</body>
     </html>
   );
 }

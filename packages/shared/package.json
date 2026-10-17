@@ -8,7 +8,8 @@
     "./format": "./src/format.ts",
     "./pricing": "./src/pricing.ts",
     "./phone": "./src/phone.ts",
-    "./districts": "./src/districts.ts"
+    "./districts": "./src/districts.ts",
+    "./admin": "./src/admin.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import { env } from "./config/env";
+import { getLocalStorage } from "./lib/storage";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler";
 import { globalLimiter } from "./middleware/rate-limit";
 import { requestLogger } from "./middleware/request-logger";
@@ -19,6 +20,11 @@ export function createApp() {
   app.use(globalLimiter());
   app.use(express.json({ limit: "100kb" }));
   app.use(cookieParser());
+  // Local storage driver: uploaded files (keys are random and never reused, so cache for good)
+  const local = getLocalStorage();
+  if (local) {
+    app.use("/uploads", express.static(local.root, { immutable: true, maxAge: "365d", index: false }));
+  }
   app.use("/api/v1", v1Router);
   app.use(notFoundHandler);
   app.use(errorHandler);

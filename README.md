@@ -28,6 +28,29 @@ those requests to `API_INTERNAL_URL` (default `http://localhost:4000`). Server c
 - The API takes the visitor IP from `CF-Connecting-IP` / `X-Forwarded-For`, which pass through the
   proxy. In production Cloudflare sets them. In local dev nothing does, so orders record `::1`.
 
+## Admin
+
+`/admin` (products, categories, brands) is for OWNER and MANAGER accounts. The seed prints the
+owner's password once. Set `SEED_ADMIN_PASSWORD` before `pnpm db:seed` to choose it.
+
+## Image uploads
+
+The browser uploads straight to storage with a short-lived signed URL. The API only signs, then
+checks the uploaded file before attaching it. `STORAGE_DRIVER` in `apps/api/.env` picks where
+files go:
+
+- `local` (the default, development only): files are written to `apps/api/uploads/` and served at
+  `/uploads/*`, which the web app proxies like `/api/v1`. Nothing to set up.
+- `r2` (required in production; the API refuses to start with `local` there): Cloudflare R2. Set
+  the `R2_*` variables, add the `R2_PUBLIC_URL` host to the web's `IMAGE_HOSTS`, and add a CORS
+  rule to the bucket so the browser can PUT from the site:
+  ```json
+  [{ "AllowedOrigins": ["https://primegearbd.com"], "AllowedMethods": ["PUT"], "AllowedHeaders": ["content-type"], "MaxAgeSeconds": 3600 }]
+  ```
+
+Removed or replaced images are deleted from storage by the `storage-delete` BullMQ worker
+(`pnpm dev` runs the workers).
+
 ## Test on a phone (same WiFi)
 
 1. Find your computer's LAN IP: `ipconfig getifaddr en0` (macOS) or `hostname -I` (Linux).

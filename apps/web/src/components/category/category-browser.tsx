@@ -10,7 +10,7 @@ import { ICON_STROKE } from "@primegear/ui/icon";
 import { BottomSheet } from "@primegear/ui/overlay";
 import { ProductCardSkeleton } from "@primegear/ui/skeleton";
 import { ProductGrid } from "@/components/product/product-grid";
-import { fetchCategoryProducts } from "@/app/product-category/[slug]/actions";
+import { fetchCategoryProducts } from "@/app/(shop)/product-category/[slug]/actions";
 
 type Filters = { minPrice?: number; maxPrice?: number; inStock?: boolean };
 

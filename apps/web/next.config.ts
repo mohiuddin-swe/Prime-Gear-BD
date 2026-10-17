@@ -29,7 +29,11 @@ const config: NextConfig = {
    * are then first-party on whatever host serves the page, and no CORS is involved.
    */
   async rewrites() {
-    return [{ source: "/api/v1/:path*", destination: `${apiInternalUrl}/api/v1/:path*` }];
+    return [
+      { source: "/api/v1/:path*", destination: `${apiInternalUrl}/api/v1/:path*` },
+      // Images stored by the API's local storage driver (development; production uses the R2 domain)
+      { source: "/uploads/:path*", destination: `${apiInternalUrl}/uploads/:path*` },
+    ];
   },
 };
 

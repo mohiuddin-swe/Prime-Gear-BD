@@ -1,8 +1,9 @@
 import { logger } from "../lib/logger";
 import { createExampleWorker } from "./example.worker";
 import { createSearchSyncWorker } from "./search-sync.worker";
+import { createStorageDeleteWorker } from "./storage-delete.worker";
 
-const workers = [createExampleWorker(), createSearchSyncWorker()];
+const workers = [createExampleWorker(), createSearchSyncWorker(), createStorageDeleteWorker()];
 
 for (const w of workers) {
   w.on("failed", (job, err) => logger.error({ queue: w.name, jobId: job?.id, err }, "job failed"));
