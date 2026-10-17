@@ -20,7 +20,7 @@ export function LoginForm() {
     setError(null);
     try {
       await adminApi.login(email, password);
-      router.replace("/admin/products/");
+      router.replace("/admin/orders/");
       router.refresh();
     } catch (err) {
       setError(errorMessage(err));

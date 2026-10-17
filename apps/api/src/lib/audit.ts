@@ -1,14 +1,16 @@
 import type { Prisma } from "@primegear/db";
+import type { AdminRole } from "@primegear/shared";
 import type { Request } from "express";
 import { clientIp } from "./client-ip";
 
 /** Who is making an admin write: every admin service takes this and records it in AuditLog. */
-export type Actor = { storeId: string; adminUserId: string; ip?: string };
+export type Actor = { storeId: string; adminUserId: string; ip?: string; role?: AdminRole };
 
 export const actorFrom = (req: Request): Actor => ({
   storeId: req.storeId,
   adminUserId: req.admin!.id, // routes behind requireAdmin()
   ip: clientIp(req),
+  role: req.admin!.role,
 });
 
 type Tx = Pick<Prisma.TransactionClient, "auditLog">;

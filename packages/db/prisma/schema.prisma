@@ -117,6 +117,11 @@ enum DiscountType {
   PERCENT // 1-100
 }
 
+enum OrderNoteKind {
+  NOTE // free-text admin note
+  NO_ANSWER // a call attempt the customer didn't pick up
+}
+
 enum TrackingPlatform {
   META
   TIKTOK
@@ -156,6 +161,7 @@ model Store {
   orders            Order[]
   orderItems        OrderItem[]
   orderStatusLogs   OrderStatusLog[]
+  orderNotes        OrderNote[]
   payments          Payment[]
   shipments         Shipment[]
   courierAccounts   CourierAccount[]
@@ -534,6 +540,10 @@ model Order {
   leadEventId    String? // shared by browser + server Lead for dedup
   purchaseSentAt DateTime? // idempotency guard for the server-side Purchase
 
+  // Call center
+  noAnswerCount Int       @default(0)
+  lastContactAt DateTime? // last call attempt or note by an admin
+
   confirmedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -542,6 +552,7 @@ model Order {
   customer          Customer?          @relation(fields: [customerId], references: [id], onDelete: SetNull)
   items             OrderItem[]
   statusLogs        OrderStatusLog[]
+  notes             OrderNote[]
   payments          Payment[]
   shipments         Shipment[]
   trackingEventLogs TrackingEventLog[]
@@ -586,6 +597,23 @@ model OrderStatusLog {
   note        String?
   adminUserId String?
   createdAt   DateTime     @default(now())
+
+  store     Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  order     Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  adminUser AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, orderId, createdAt])
+}
+
+// Admin notes and call attempts on an order (the customer's own checkout note is Order.note).
+model OrderNote {
+  id          String        @id @default(cuid())
+  storeId     String
+  orderId     String
+  adminUserId String?
+  kind        OrderNoteKind @default(NOTE)
+  body        String?
+  createdAt   DateTime      @default(now())
 
   store     Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
   order     Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
@@ -672,6 +700,7 @@ model AdminUser {
   store      Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
   auditLogs  AuditLog[]
   statusLogs OrderStatusLog[]
+  orderNotes OrderNote[]
 
   @@unique([storeId, email])
 }

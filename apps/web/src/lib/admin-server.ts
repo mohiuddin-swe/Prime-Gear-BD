@@ -1,5 +1,6 @@
 // Server only: next/headers fails loudly if this is ever imported into a client component
 import { cookies } from "next/headers";
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import type { AdminProfile, ApiMeta } from "@primegear/shared";
 import { ApiRequestError } from "./api";
@@ -31,8 +32,11 @@ export async function adminGet<T>(path: string): Promise<{ data: T; meta?: ApiMe
   return { data: body.data as T, meta: body.meta };
 }
 
-/** The signed-in admin, or null. Used by the panel layout (redirects) and the login page (skips the form). */
-export async function getAdminSession(): Promise<AdminProfile | null> {
+/**
+ * The signed-in admin, or null. Used by the panel layouts (redirects) and the login page (skips the
+ * form). Cached per request, so nested layouts share one lookup.
+ */
+export const getAdminSession = cache(async (): Promise<AdminProfile | null> => {
   const jar = await cookies();
   if (!jar.has("pg_admin")) return null;
   const res = await fetch(`${API_URL}/api/v1/admin/auth/me`, {
@@ -42,7 +46,7 @@ export async function getAdminSession(): Promise<AdminProfile | null> {
   if (!res.ok) return null;
   const body = (await res.json().catch(() => null)) as { data?: AdminProfile } | null;
   return body?.data ?? null;
-}
+});
 
 /** Query string from searchParams, dropping empty values (GET filter forms submit blanks). */
 export function toQuery(params: Record<string, string | string[] | undefined>, keys: string[]) {

@@ -50,7 +50,7 @@ export const colors = {
     deep: "#b45309", // icon on deal-soft
   },
   success: { DEFAULT: "#16a34a", ink: "#15803d" }, // ink = text (AA on white)
-  danger: "#dc2626",
+  danger: { DEFAULT: "#dc2626", ink: "#b91c1c" }, // ink = text on danger/10 tints (AA)
   // Payment brand chips (checkout)
   pay: { bkash: "#c2185b", nagad: "#c2410c", rocket: "#7e22ce" },
 } as const;

@@ -30,8 +30,14 @@ those requests to `API_INTERNAL_URL` (default `http://localhost:4000`). Server c
 
 ## Admin
 
-`/admin` (products, categories, brands) is for OWNER and MANAGER accounts. The seed prints the
-owner's password once. Set `SEED_ADMIN_PASSWORD` before `pnpm db:seed` to choose it.
+`/admin/orders` is for every admin role: call agents confirm, cancel and edit pending orders and
+work incomplete checkouts; packers mark orders packed and shipped. Products, categories and brands
+are for OWNER and MANAGER accounts. The seed prints the owner's password once. Set
+`SEED_ADMIN_PASSWORD` before `pnpm db:seed` to choose it.
+
+Every order status change goes through `services/admin/order-status.service.ts` (allowed moves and
+roles in `packages/shared/src/orders.ts`). Pending → Confirmed emits the in-process
+`order.confirmed` event (`apps/api/src/events/order-events.ts`).
 
 ## Image uploads
 

@@ -1,5 +1,14 @@
 import type {
   AddProductImageInput,
+  AdminIncompleteOrder,
+  AdminOrderDetail,
+  AdminVariantOption,
+  BulkOrderStatusResult,
+  ConvertIncompleteInput,
+  OrderAddressInput,
+  OrderItemsInput,
+  OrderStatus,
+  OrderStatusResult,
   AdminBrand,
   AdminCategory,
   AdminProduct,
@@ -65,6 +74,30 @@ export const adminApi = {
     call<AdminBrand>(`/admin/brands/${id}`, { method: "PUT", body }),
   deleteBrand: (id: string) => call<{ deleted: true }>(`/admin/brands/${id}`, { method: "DELETE" }),
 
+  setOrderStatus: (id: string, status: OrderStatus, note?: string) =>
+    call<OrderStatusResult>(`/admin/orders/${id}/status`, { method: "POST", body: { status, note } }),
+  bulkOrderStatus: (ids: string[], status: OrderStatus) =>
+    call<BulkOrderStatusResult>("/admin/orders/bulk-status", { method: "POST", body: { ids, status } }),
+  noAnswer: (id: string) =>
+    call<{ noAnswerCount: number; lastContactAt: string }>(`/admin/orders/${id}/no-answer`, {
+      method: "POST",
+    }),
+  addOrderNote: (id: string, body: string) =>
+    call<AdminOrderDetail["notes"][number]>(`/admin/orders/${id}/notes`, { method: "POST", body: { body } }),
+  updateOrderAddress: (id: string, body: OrderAddressInput) =>
+    call<AdminOrderDetail>(`/admin/orders/${id}/address`, { method: "PUT", body }),
+  updateOrderItems: (id: string, body: OrderItemsInput) =>
+    call<AdminOrderDetail>(`/admin/orders/${id}/items`, { method: "PUT", body }),
+  variantOptions: (q: string) =>
+    call<AdminVariantOption[]>(`/admin/orders/variant-options?q=${encodeURIComponent(q)}`),
+
+  setIncompleteStatus: (id: string, status: "OPEN" | "CONTACTED" | "DISCARDED") =>
+    call<AdminIncompleteOrder>(`/admin/incomplete-orders/${id}`, { method: "PATCH", body: { status } }),
+  convertIncomplete: (id: string, body: ConvertIncompleteInput) =>
+    call<{ orderId: string; orderNumber: string; total: number }>(
+      `/admin/incomplete-orders/${id}/convert`,
+      { method: "POST", body },
+    ),
 };
 
 /**

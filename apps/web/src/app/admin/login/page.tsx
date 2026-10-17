@@ -13,7 +13,7 @@ export default async function AdminLoginPage({
 }) {
   const { denied } = await searchParams;
   const admin = await getAdminSession();
-  if (admin && !denied) redirect("/admin/products/");
+  if (admin && !denied) redirect("/admin/orders/");
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-ink-950 bg-glow-blue px-4 py-10">
@@ -27,11 +27,11 @@ export default async function AdminLoginPage({
             <h1 className="font-heading text-title font-extrabold tracking-heading text-ink-950">
               Admin sign in
             </h1>
-            <p className="text-sm text-ink-500">Manage products, categories and brands.</p>
+            <p className="text-sm text-ink-500">Manage orders, products and customers.</p>
           </div>
           {denied && (
             <p role="alert" className="rounded-btn bg-brand-50 px-3.5 py-3 text-sm text-brand-800">
-              Your role can&apos;t open the catalog. Sign in as an owner or manager.
+              Your role can&apos;t open that page. Sign in with another account.
             </p>
           )}
           <LoginForm />
